@@ -5,6 +5,7 @@ import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.utils.ConversionUtils;
 import com.pedrogonic.swapi.domain.Planet;
+import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.repositories.MongoPlanetRepository;
 import com.pedrogonic.swapi.services.IPlanetService;
@@ -27,8 +28,8 @@ public class MongoPlanetService implements IPlanetService {
     Messages messages;
 
     @Override
-    public List<Planet> findAll(/* Filter, Pageable */) { // TODO: Filter, Pageable
-        return orikaMapper.mapAsList(mongoPlanetRepository.findAll(), Planet.class);
+    public List<Planet> findAll(PlanetFilter planetFilter /*, Pageable pageable*/) { // TODO: Pageable
+        return orikaMapper.mapAsList(mongoPlanetRepository.findAll(planetFilter), Planet.class);
     }
 
     @Override

@@ -4,7 +4,9 @@ import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.PlanetDTO;
+import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.services.IPlanetService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/planets")
+@Log4j2
 public class PlanetController {
 
     @Autowired
@@ -27,11 +30,15 @@ public class PlanetController {
 
 
     @GetMapping(value = "")
-    List<PlanetDTO> listAll(@RequestParam(required = false) final String name) { // TODO: Pageable
-        // TODO: Filter
-        // new Filter()
+    List<PlanetDTO> listAll(@RequestParam(required = false) final String name,
+                            @RequestParam(required = false) final String id) { // TODO: Pageable
 
-        List<Planet> planets = planetService.findAll(/* Filter */);
+        PlanetFilter planetFilter = PlanetFilter.builder()
+                .id(id)
+                .name(name)
+                .build();
+
+        List<Planet> planets = planetService.findAll(planetFilter);
 
         return orikaMapper.mapAsList(planets, PlanetDTO.class);
     }

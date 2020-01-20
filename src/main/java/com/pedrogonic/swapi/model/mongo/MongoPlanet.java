@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class MongoPlanet {
 
     public static final String PLANET_COLLECTION = "planets";
+    public static final String FIELD_ID = "_id";
+    public static final String FIELD_NAME = "name";
 
     @Id
     private ObjectId id;
