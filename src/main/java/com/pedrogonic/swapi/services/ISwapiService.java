@@ -1,6 +1,7 @@
 package com.pedrogonic.swapi.services;
 
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
+import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.SwapiPlanetDTO;
 
@@ -16,7 +17,7 @@ public interface ISwapiService {
      * @param name - must not be null.
      * @return a matching planet.
      */
-    Planet findPlanetByName(String name) throws PlanetNotFoundException;
+    Planet findPlanetByName(String name) throws PlanetNotFoundException, SwapiUnreachableException;
 
     /**
      * Returns all planets from the SWAPI
@@ -26,6 +27,6 @@ public interface ISwapiService {
      * </p>
      * @return list of all planets.
      */
-    List<Planet> findAll();
+    List<Planet> findAll() throws SwapiUnreachableException;
 
 }

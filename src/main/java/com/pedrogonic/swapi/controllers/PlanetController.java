@@ -2,6 +2,7 @@ package com.pedrogonic.swapi.controllers;
 
 import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
+import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.PlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
@@ -35,7 +36,7 @@ public class PlanetController {
     @GetMapping(value = "")
     List<PlanetDTO> listAll(@PageableDefault(size = Integer.MAX_VALUE, sort = MongoPlanet.FIELD_NAME) final Pageable pageable, //TODO: Remove reference to Mongo
                             @RequestParam(required = false) final String name,
-                            @RequestParam(required = false) final String id) {
+                            @RequestParam(required = false) final String id) throws SwapiUnreachableException {
 
         PlanetFilter planetFilter = PlanetFilter.builder()
                 .id(id)
@@ -51,7 +52,7 @@ public class PlanetController {
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    PlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException {
+    PlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException, SwapiUnreachableException {
         Planet planet = planetService.findById(id);
 
         return orikaMapper.map(planet, PlanetDTO.class);
@@ -59,6 +60,9 @@ public class PlanetController {
 
     @PutMapping(value = "/{id}")
     ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) {
+
+        // TODO: validate SWAPI
+
         planetDTO.setId(id);
 
         Planet planet = orikaMapper.map(planetDTO, Planet.class);
@@ -82,7 +86,7 @@ public class PlanetController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) throws PlanetNotFoundException {
+    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) throws PlanetNotFoundException, SwapiUnreachableException {
         planetDTO.setId(null);
 
         Planet planet = orikaMapper.map(planetDTO, Planet.class);

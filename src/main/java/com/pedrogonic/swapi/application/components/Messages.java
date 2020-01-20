@@ -41,4 +41,9 @@ public class Messages {
     return MessageFormat.format(get("error.planet.not.found.in.swapi"), id);
   }
 
+  public String getErrorSwapiUnreachable(final String status) {
+    return MessageFormat.format(get("error.swapi.unreachable"), status);
+  }
+
+
 }

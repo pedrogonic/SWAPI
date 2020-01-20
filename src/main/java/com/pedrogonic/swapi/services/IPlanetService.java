@@ -1,6 +1,7 @@
 package com.pedrogonic.swapi.services;
 
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
+import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public interface IPlanetService {
      * @param planetFilter - must not be null
      * @return List of Planets matching the filter or restricted list by Pageable object
      */
-    List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter);
+    List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter) throws SwapiUnreachableException;
 
     /**
      * Return planet with provided Id
@@ -33,7 +34,7 @@ public interface IPlanetService {
      * @return Planet object with the given id
      * @throws PlanetNotFoundException - if no planet is found
      */
-    Planet findById(String id) throws PlanetNotFoundException;
+    Planet findById(String id) throws PlanetNotFoundException, SwapiUnreachableException;
 
     /**
      * Updates an existing Planet
@@ -54,7 +55,7 @@ public interface IPlanetService {
      * @return
      * @throws PlanetNotFoundException - if no planet is found in the original SWAPI
      */
-    Planet createPlanet(Planet planet) throws PlanetNotFoundException;
+    Planet createPlanet(Planet planet) throws PlanetNotFoundException, SwapiUnreachableException;
 
     /**
      * Deletes a Planet by Id

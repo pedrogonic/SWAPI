@@ -3,9 +3,9 @@ package com.pedrogonic.swapi.services.impl;
 import com.pedrogonic.swapi.application.components.Messages;
 import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
+import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.application.utils.ConversionUtils;
 import com.pedrogonic.swapi.domain.Planet;
-import com.pedrogonic.swapi.model.dtos.SwapiPlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.repositories.MongoPlanetRepository;
@@ -37,7 +37,7 @@ public class MongoPlanetService implements IPlanetService {
     Messages messages;
 
     @Override
-    public List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter) {
+    public List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter) throws SwapiUnreachableException {
 
         List<MongoPlanet> mongoPlanets;
 
@@ -75,13 +75,11 @@ public class MongoPlanetService implements IPlanetService {
                 break;
         }
 
-        //TODO: Call SWAPI
-
         return planets;
     }
 
     @Override
-    public Planet findById(String id) throws PlanetNotFoundException {
+    public Planet findById(String id) throws PlanetNotFoundException, SwapiUnreachableException {
         ObjectId objectId = ConversionUtils.stringToObjectId(id);
 
         MongoPlanet mongoPlanet = mongoPlanetRepository.findById(objectId)
@@ -108,7 +106,7 @@ public class MongoPlanetService implements IPlanetService {
     }
 
     @Override
-    public Planet createPlanet(Planet planet) throws PlanetNotFoundException {
+    public Planet createPlanet(Planet planet) throws PlanetNotFoundException, SwapiUnreachableException {
 
         // Call api to check if planet exists. If not, throw an Exception.
         int filmCount = swapiService.findPlanetByName(planet.getName()).getFilmCount();
