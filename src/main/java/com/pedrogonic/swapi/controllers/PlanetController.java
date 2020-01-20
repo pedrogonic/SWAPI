@@ -82,7 +82,7 @@ public class PlanetController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) {
+    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) throws PlanetNotFoundException {
         planetDTO.setId(null);
 
         Planet planet = orikaMapper.map(planetDTO, Planet.class);

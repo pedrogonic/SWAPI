@@ -29,8 +29,8 @@ public interface IPlanetService {
      * <p>
      * If no planet is found, throws  PlanetNotFoundException.
      * </p>
-     * @param id - must not be null.
-     * @return Planet object with the given id.
+     * @param id - must not be null
+     * @return Planet object with the given id
      * @throws PlanetNotFoundException - if no planet is found
      */
     Planet findById(String id) throws PlanetNotFoundException;
@@ -52,8 +52,9 @@ public interface IPlanetService {
      * </p>
      * @param planet - must not be null
      * @return
+     * @throws PlanetNotFoundException - if no planet is found in the original SWAPI
      */
-    Planet createPlanet(Planet planet);
+    Planet createPlanet(Planet planet) throws PlanetNotFoundException;
 
     /**
      * Deletes a Planet by Id

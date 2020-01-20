@@ -5,10 +5,12 @@ import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.utils.ConversionUtils;
 import com.pedrogonic.swapi.domain.Planet;
+import com.pedrogonic.swapi.model.dtos.SwapiPlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.repositories.MongoPlanetRepository;
 import com.pedrogonic.swapi.services.IPlanetService;
+import com.pedrogonic.swapi.services.ISwapiService;
 import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -23,6 +26,9 @@ public class MongoPlanetService implements IPlanetService {
 
     @Autowired
     MongoPlanetRepository mongoPlanetRepository;
+
+    @Autowired
+    ISwapiService swapiService;
 
     @Autowired
     OrikaMapper orikaMapper;
@@ -37,7 +43,41 @@ public class MongoPlanetService implements IPlanetService {
 
         mongoPlanets = mongoPlanetRepository.findAll(pageable, planetFilter);
 
-        return orikaMapper.mapAsList(mongoPlanets, Planet.class);
+        List<Planet> planets = orikaMapper.mapAsList(mongoPlanets, Planet.class);
+
+        switch (mongoPlanets.size()) {
+            case 1:
+                try {
+
+                    planets.get(0).setFilmCount( swapiService.findPlanetByName( planets.get(0).getName() ) .getFilmCount() );
+
+                } catch (PlanetNotFoundException e) {
+                    // Only happens if Planet is included directly in the database
+                    // since the api checks against the original SWAPI when creating
+                    // a new planet.
+                    log.error(e.getMessage());
+                }
+                break;
+            case 0: break;
+            default:
+                List<Planet> swapiPlanets = swapiService.findAll();
+
+                planets = planets.stream().map(
+                        planet -> {
+                            Planet swapiPlanet = swapiPlanets.stream().filter(
+                                    sp -> sp.getName().equals(planet.getName())
+                                            ).findFirst().orElse(new Planet());
+                            planet.setFilmCount(swapiPlanet.getFilmCount());
+                            return planet;
+                        }
+                ).collect(Collectors.toList());
+
+                break;
+        }
+
+        //TODO: Call SWAPI
+
+        return planets;
     }
 
     @Override
@@ -47,9 +87,10 @@ public class MongoPlanetService implements IPlanetService {
         MongoPlanet mongoPlanet = mongoPlanetRepository.findById(objectId)
                 .orElseThrow(() -> new PlanetNotFoundException(messages.getErrorPlanetNotFoundById(id)));
 
-        // TODO: Call SWAPI
+        Planet planet = orikaMapper.map(mongoPlanet, Planet.class);
+        planet.setFilmCount(swapiService.findPlanetByName(mongoPlanet.getName()).getFilmCount());
 
-        return orikaMapper.map(mongoPlanet, Planet.class);
+        return planet;
     }
 
     @Override
@@ -67,12 +108,18 @@ public class MongoPlanetService implements IPlanetService {
     }
 
     @Override
-    public Planet createPlanet(Planet planet) {
+    public Planet createPlanet(Planet planet) throws PlanetNotFoundException {
+
+        // Call api to check if planet exists. If not, throw an Exception.
+        int filmCount = swapiService.findPlanetByName(planet.getName()).getFilmCount();
 
         MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
         mongoPlanet = mongoPlanetRepository.insert(mongoPlanet);
 
-        return orikaMapper.map(mongoPlanet, Planet.class);
+        planet = orikaMapper.map(mongoPlanet, Planet.class);
+        planet.setFilmCount(filmCount);
+
+        return planet;
     }
 
     @Override

@@ -37,4 +37,8 @@ public class Messages {
     return MessageFormat.format(get("error.planet.not.found.by.id"), id);
   }
 
+  public String getErrorPlanetNotFoundInSwapi(final String id) {
+    return MessageFormat.format(get("error.planet.not.found.in.swapi"), id);
+  }
+
 }
