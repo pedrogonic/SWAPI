@@ -6,12 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Validated
 @Document(collection = MongoPlanet.PLANET_COLLECTION)
 public class MongoPlanet {
 
@@ -22,14 +27,15 @@ public class MongoPlanet {
     @Id
     private ObjectId id;
 
-    // TODO Index and Validation
-
+    // TODO Auto index creation policy - See WARNING on startup
+    @Indexed(unique = true, background = true)
+    @NotBlank(message = "{planet.name.NotBlank}")
     private String name;
 
-
+    @NotBlank(message = "{planet.climate.NotBlank}")
     private String climate;
 
-
+    @NotBlank(message = "{planet.terrain.NotBlank}")
     private String terrain;
 
 }

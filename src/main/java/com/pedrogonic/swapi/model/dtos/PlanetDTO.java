@@ -16,13 +16,13 @@ public class PlanetDTO {
 
     private String id;
 
-    @NotBlank
+    @NotBlank(message = "{planet.name.NotBlank}")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "{planet.climate.NotBlank}")
     private String climate;
 
-    @NotBlank
+    @NotBlank(message = "{planet.terrain.NotBlank}")
     private String terrain;
 
 

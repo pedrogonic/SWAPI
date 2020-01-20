@@ -68,12 +68,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     for (final ConstraintViolation<?> violation : ex.getConstraintViolations()) {
       userMessage.add(violation.getMessage());
-      violationsKeyMap.add(violation.getPropertyPath() + ": " + violation.getInvalidValue());
+      violationsKeyMap.add(violation.getPropertyPath() + " - invalid value: " + violation.getInvalidValue());
     }
 
     final ApiError apiError =
         ApiError.builder(httpStatus).withDetail("A set of constraint violations was reported during a validation.")
-            .withMessage(StringUtils.join(userMessage, System.lineSeparator())).withErrors(violationsKeyMap).build();
+            .withMessage(StringUtils.join(userMessage, " | ")).withErrors(violationsKeyMap).build();
 
     return apiError.toResponseEntity();
   }
@@ -124,7 +124,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     final ApiError apiError =
         ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(errors).build();
-    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
+//    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
+    return apiError.toResponseEntity();
   }
 
   @Override
@@ -144,7 +145,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     final ApiError apiError =
         ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(errors).build();
-    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
+//    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
+    return apiError.toResponseEntity();
   }
 
   @Override
