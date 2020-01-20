@@ -1,6 +1,7 @@
 package com.pedrogonic.swapi.controllers;
 
 import com.pedrogonic.swapi.application.components.OrikaMapper;
+import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.PlanetDTO;
 import com.pedrogonic.swapi.services.IPlanetService;
@@ -37,13 +38,8 @@ public class PlanetController {
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    PlanetDTO getById(@PathVariable final String id) throws Exception {
+    PlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException {
         Planet planet = planetService.findById(id);
-
-        // if found: 200
-
-        // if not found: 404
-        // TODO: Exception Handler
 
         return orikaMapper.map(planet, PlanetDTO.class);
     }

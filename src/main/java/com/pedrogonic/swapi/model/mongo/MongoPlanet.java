@@ -20,6 +20,7 @@ public class MongoPlanet {
     @Id
     private ObjectId id;
 
+    // TODO Index and Validation
 
     private String name;
 

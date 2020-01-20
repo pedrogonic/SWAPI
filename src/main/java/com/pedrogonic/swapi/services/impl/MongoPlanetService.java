@@ -1,6 +1,8 @@
 package com.pedrogonic.swapi.services.impl;
 
+import com.pedrogonic.swapi.application.components.Messages;
 import com.pedrogonic.swapi.application.components.OrikaMapper;
+import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.utils.ConversionUtils;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
@@ -21,17 +23,20 @@ public class MongoPlanetService implements IPlanetService {
     @Autowired
     OrikaMapper orikaMapper;
 
+    @Autowired
+    Messages messages;
+
     @Override
     public List<Planet> findAll(/* Filter, Pageable */) { // TODO: Filter, Pageable
         return orikaMapper.mapAsList(mongoPlanetRepository.findAll(), Planet.class);
     }
 
     @Override
-    public Planet findById(String id) throws Exception {
+    public Planet findById(String id) throws PlanetNotFoundException {
         ObjectId objectId = ConversionUtils.stringToObjectId(id);
 
         MongoPlanet mongoPlanet = mongoPlanetRepository.findById(objectId)
-                .orElseThrow(() -> new Exception()); // TODO: Custom Exception
+                .orElseThrow(() -> new PlanetNotFoundException(messages.getErrorPlanetNotFoundById(id)));
 
         // TODO: Call SWAPI
 
