@@ -1,6 +1,7 @@
 package com.pedrogonic.swapi.services.impl;
 
 import com.pedrogonic.swapi.application.components.OrikaMapper;
+import com.pedrogonic.swapi.application.utils.ConversionUtils;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.repositories.MongoPlanetRepository;
@@ -27,13 +28,8 @@ public class MongoPlanetService implements IPlanetService {
 
     @Override
     public Planet findById(String id) throws Exception {
-        // TODO: Refactor. Create helper method
-        ObjectId objectId;
-        try {
-            objectId = new ObjectId(id);
-        } catch (Exception e) {
-            objectId = new ObjectId();
-        }
+        ObjectId objectId = ConversionUtils.stringToObjectId(id);
+
         MongoPlanet mongoPlanet = mongoPlanetRepository.findById(objectId)
                 .orElseThrow(() -> new Exception()); // TODO: Custom Exception
 
@@ -44,15 +40,13 @@ public class MongoPlanetService implements IPlanetService {
 
     @Override
     public Planet updatePlanet(Planet planet) {
-        MongoPlanet mongoPlanet;
 
-        try {
-            mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
-        } catch(Exception ex) {
-            // Illegal ID passed is ignored and object is treated as new
-            planet.setId(null);
-            mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
-        }
+        // Using utils method to convert String id to a valid ObjectId
+        // or a new ObjectId(), and then converting back to String.
+        // This ensures that the mapper won't fail with an Illegal Argument Exception
+        planet.setId(ConversionUtils.stringToObjectId(planet.getId()).toString());
+
+        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
 
         mongoPlanet = mongoPlanetRepository.save(mongoPlanet);
         return orikaMapper.map(mongoPlanet, Planet.class);
@@ -69,13 +63,7 @@ public class MongoPlanetService implements IPlanetService {
 
     @Override
     public void deletePlanetById(String id) {
-        // TODO: Refactor. Create helper method
-        ObjectId objectId;
-        try {
-            objectId = new ObjectId(id);
-        } catch (Exception e) {
-            objectId = new ObjectId();
-        }
+        ObjectId objectId = ConversionUtils.stringToObjectId(id);
         mongoPlanetRepository.deleteById(objectId);
     }
 }
