@@ -31,11 +31,19 @@ class PlanetControllerTest {
     }
 
     @Test
-    void updatePlanet() {
+    void whenPutRequestToPlanetsAndValidPlanet() {
     }
 
     @Test
-    void createPlanet() {
+    void whenPutRequestToPlanetsAndInvalidPlanet() {
+    }
+
+    @Test
+    void whenPostRequestToPlanetsAndValidPlanet() {
+    }
+
+    @Test
+    void whenPostRequestToPlanetsAndInvalidPlanet() {
     }
 
     @Test
