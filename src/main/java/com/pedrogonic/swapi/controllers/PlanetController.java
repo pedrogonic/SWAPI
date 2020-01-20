@@ -26,50 +26,56 @@ public class PlanetController {
 
 
     @GetMapping(value = "")
-    List<PlanetDTO> listAll(@RequestParam(required = false) final String name) {
-        // service.find with filter
+    List<PlanetDTO> listAll(@RequestParam(required = false) final String name) { // TODO: Pageable
+        // TODO: Filter
+        // new Filter()
 
-        // TODO
-        List<Planet> planets = planetService.findAll();
+        List<Planet> planets = planetService.findAll(/* Filter */);
 
-        return null;
+        return orikaMapper.mapAsList(planets, PlanetDTO.class);
     }
 
-    // TODO
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    PlanetDTO getById(@PathVariable final String id) {
-        // service.findById
-
+    PlanetDTO getById(@PathVariable final String id) throws Exception {
         Planet planet = planetService.findById(id);
 
         // if found: 200
 
         // if not found: 404
+        // TODO: Exception Handler
 
-        return null;
+        return orikaMapper.map(planet, PlanetDTO.class);
     }
 
-    // TODO
     @PutMapping(value = "/{id}")
     ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) {
-        // service.update
+        planetDTO.setId(id);
 
-        Planet planet = null; // mapper
-        // planet.setId(id);
+        Planet planet = orikaMapper.map(planetDTO, Planet.class);
 
         planet = planetService.updatePlanet(planet);
 
+        planetDTO =  orikaMapper.map(planet, PlanetDTO.class);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .replacePath("/{id}")
+                .buildAndExpand(planetDTO.getId()).toUri();
+
         // if created: 201
+        if (planet.getId().equals(id))
+            return ResponseEntity.status(HttpStatus.OK).body(planetDTO);
 
         // if updated: 200
-
-        return null; // mapper
+        else
+            return ResponseEntity.created(location).body(planetDTO);
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) {
+        planetDTO.setId(null);
+
         Planet planet = orikaMapper.map(planetDTO, Planet.class);
 
         planet = planetService.createPlanet(planet);

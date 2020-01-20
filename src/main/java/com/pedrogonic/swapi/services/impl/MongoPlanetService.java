@@ -21,29 +21,61 @@ public class MongoPlanetService implements IPlanetService {
     OrikaMapper orikaMapper;
 
     @Override
-    public List<Planet> findAll(/* Filter */) {
-        return null;
+    public List<Planet> findAll(/* Filter, Pageable */) { // TODO: Filter, Pageable
+        return orikaMapper.mapAsList(mongoPlanetRepository.findAll(), Planet.class);
     }
 
     @Override
-    public Planet findById(String id) {
-        return null;
+    public Planet findById(String id) throws Exception {
+        // TODO: Refactor. Create helper method
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(id);
+        } catch (Exception e) {
+            objectId = new ObjectId();
+        }
+        MongoPlanet mongoPlanet = mongoPlanetRepository.findById(objectId)
+                .orElseThrow(() -> new Exception()); // TODO: Custom Exception
+
+        // TODO: Call SWAPI
+
+        return orikaMapper.map(mongoPlanet, Planet.class);
     }
 
     @Override
     public Planet updatePlanet(Planet planet) {
-        return null;
-    }
+        MongoPlanet mongoPlanet;
 
-    @Override
-    public Planet createPlanet(Planet planet) {
-        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
+        try {
+            mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
+        } catch(Exception ex) {
+            // Illegal ID passed is ignored and object is treated as new
+            planet.setId(null);
+            mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
+        }
+
         mongoPlanet = mongoPlanetRepository.save(mongoPlanet);
         return orikaMapper.map(mongoPlanet, Planet.class);
     }
 
     @Override
+    public Planet createPlanet(Planet planet) {
+
+        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
+        mongoPlanet = mongoPlanetRepository.insert(mongoPlanet);
+
+        return orikaMapper.map(mongoPlanet, Planet.class);
+    }
+
+    @Override
     public void deletePlanetById(String id) {
-        mongoPlanetRepository.deleteById(new ObjectId(id));
+        // TODO: Refactor. Create helper method
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(id);
+        } catch (Exception e) {
+            objectId = new ObjectId();
+        }
+        mongoPlanetRepository.deleteById(objectId);
     }
 }
