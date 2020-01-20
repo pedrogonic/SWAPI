@@ -1,6 +1,9 @@
 package com.pedrogonic.swapi.controllers;
 
+import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.PlanetDTO;
+import com.pedrogonic.swapi.services.IPlanetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +15,16 @@ import java.util.List;
 @RequestMapping(value = "/planets")
 public class PlanetController {
 
-    // @Autowired
-    // Service service;
+    @Autowired
+    IPlanetService planetService;
 
 
-    // TODO
     @GetMapping(value = "/")
     List<PlanetDTO> listAll(@RequestParam(required = false) final String name) {
         // service.find with filter
+
+        // TODO
+        List<Planet> planets = planetService.findAll();
 
         return null;
     }
@@ -30,6 +35,8 @@ public class PlanetController {
     PlanetDTO getById(@PathVariable final String id) {
         // service.findById
 
+        Planet planet = planetService.findById(id);
+
         // if found: 200
 
         // if not found: 404
@@ -39,22 +46,31 @@ public class PlanetController {
 
     // TODO
     @PutMapping(value = "/{id}")
-    ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planet, @PathVariable String id) {
+    ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) {
         // service.update
+
+        Planet planet = null; // mapper
+        // planet.setId(id);
+
+        planet = planetService.updatePlanet(planet);
 
         // if created: 201
 
         // if updated: 200
 
-        return null;
+        return null; // mapper
     }
 
     // TODO
     @PostMapping(value = "/")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planet) {
+    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) {
         // service.create
-        return null;
+        Planet planet = null; // mapper
+
+        planet = planetService.createPlanet(planet);
+
+        return null; // mapper
     }
 
     // TODO
@@ -62,6 +78,7 @@ public class PlanetController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deletePlanet(@PathVariable String id) {
         // service.delete
+        planetService.deletePlanetById(id);
     }
 
 }

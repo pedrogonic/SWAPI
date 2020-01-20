@@ -12,8 +12,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection = "planets")
+@Document(collection = MongoPlanet.PLANET_COLLECTION)
 public class MongoPlanet {
+
+    public static final String PLANET_COLLECTION = "planets";
 
     @Id
     private ObjectId id;

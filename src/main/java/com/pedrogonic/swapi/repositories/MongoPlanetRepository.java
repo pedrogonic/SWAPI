@@ -1,7 +1,10 @@
 package com.pedrogonic.swapi.repositories;
 
-import com.pedrogonic.swapi.domain.Planet;
+import com.pedrogonic.swapi.model.mongo.MongoPlanet;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface MongoPlanetRepository extends MongoRepository<Planet, String>, IPlanetRepository {
+@Repository
+public interface MongoPlanetRepository extends MongoRepository<MongoPlanet, ObjectId> {
 }
