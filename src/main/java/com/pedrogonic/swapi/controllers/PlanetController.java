@@ -1,5 +1,6 @@
 package com.pedrogonic.swapi.controllers;
 
+import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.PlanetDTO;
 import com.pedrogonic.swapi.services.IPlanetService;
@@ -7,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,8 +21,11 @@ public class PlanetController {
     @Autowired
     IPlanetService planetService;
 
+    @Autowired
+    OrikaMapper orikaMapper;
 
-    @GetMapping(value = "/")
+
+    @GetMapping(value = "")
     List<PlanetDTO> listAll(@RequestParam(required = false) final String name) {
         // service.find with filter
 
@@ -61,23 +67,25 @@ public class PlanetController {
         return null; // mapper
     }
 
-    // TODO
-    @PostMapping(value = "/")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) {
-        // service.create
-        Planet planet = null; // mapper
+        Planet planet = orikaMapper.map(planetDTO, Planet.class);
 
         planet = planetService.createPlanet(planet);
 
-        return null; // mapper
+        planetDTO =  orikaMapper.map(planet, PlanetDTO.class);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                            .replacePath("/{id}")
+                            .buildAndExpand(planetDTO.getId()).toUri();
+
+        return ResponseEntity.created(location).body(planetDTO);
     }
 
-    // TODO
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deletePlanet(@PathVariable String id) {
-        // service.delete
         planetService.deletePlanetById(id);
     }
 
