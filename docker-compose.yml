@@ -1,21 +1,21 @@
-version: "2"
+version: "2.1"
 services:
-  api:
-    image: pedrogonic/swapiimage
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    container_name: swapi
-    ports:
-      - 8090:8080
-    depends_on:
-      - swapimongodb
-    links:
-      - swapimongodb
   swapimongodb:
     image: mongo:3.2.4
+    volumes:
+      - ./mongo-volume:/data/db
+    restart: always
     container_name: "swapimongodb"
     ports:
       - 27017:27017
-    volumes:
-      - ./mongo-volume:/data/db
+
+  api:
+    container_name: swapi
+    restart: always
+    depends_on:
+      - swapimongodb
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 8090:8080
