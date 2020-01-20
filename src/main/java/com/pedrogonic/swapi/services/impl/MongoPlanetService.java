@@ -9,13 +9,16 @@ import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.repositories.MongoPlanetRepository;
 import com.pedrogonic.swapi.services.IPlanetService;
+import lombok.extern.log4j.Log4j2;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Log4j2
 public class MongoPlanetService implements IPlanetService {
 
     @Autowired
@@ -28,8 +31,13 @@ public class MongoPlanetService implements IPlanetService {
     Messages messages;
 
     @Override
-    public List<Planet> findAll(PlanetFilter planetFilter /*, Pageable pageable*/) { // TODO: Pageable
-        return orikaMapper.mapAsList(mongoPlanetRepository.findAll(planetFilter), Planet.class);
+    public List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter) {
+
+        List<MongoPlanet> mongoPlanets;
+
+        mongoPlanets = mongoPlanetRepository.findAll(pageable, planetFilter);
+
+        return orikaMapper.mapAsList(mongoPlanets, Planet.class);
     }
 
     @Override

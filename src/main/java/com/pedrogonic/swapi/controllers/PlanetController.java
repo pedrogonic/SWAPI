@@ -5,9 +5,12 @@ import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.PlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
+import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.services.IPlanetService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,15 +33,18 @@ public class PlanetController {
 
 
     @GetMapping(value = "")
-    List<PlanetDTO> listAll(@RequestParam(required = false) final String name,
-                            @RequestParam(required = false) final String id) { // TODO: Pageable
+    List<PlanetDTO> listAll(@PageableDefault(size = Integer.MAX_VALUE, sort = MongoPlanet.FIELD_NAME) final Pageable pageable, //TODO: Remove reference to Mongo
+                            @RequestParam(required = false) final String name,
+                            @RequestParam(required = false) final String id) {
 
         PlanetFilter planetFilter = PlanetFilter.builder()
                 .id(id)
                 .name(name)
                 .build();
 
-        List<Planet> planets = planetService.findAll(planetFilter);
+        List<Planet> planets = planetService.findAll(pageable, planetFilter);
+
+        // TODO: HATEOAS
 
         return orikaMapper.mapAsList(planets, PlanetDTO.class);
     }

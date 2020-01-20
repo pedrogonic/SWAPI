@@ -3,12 +3,13 @@ package com.pedrogonic.swapi.services;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface IPlanetService {
 
-    List<Planet> findAll(PlanetFilter planetFilter);
+    List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter);
     Planet findById(String id) throws PlanetNotFoundException;
     Planet updatePlanet(Planet planet);
     Planet createPlanet(Planet planet);
