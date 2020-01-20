@@ -1,4 +1,4 @@
-package com.pedrogonic.swapi.domain;
+package com.pedrogonic.swapi.model.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Planet {
+public class PlanetDTO {
+
 
     private String id;
 
+
     private String name;
+
+
     private String climate;
+
+
     private String terrain;
+
+
     private int filmCount;
 
 }
