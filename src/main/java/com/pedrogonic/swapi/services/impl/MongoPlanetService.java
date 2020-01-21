@@ -92,17 +92,29 @@ public class MongoPlanetService implements IPlanetService {
     }
 
     @Override
-    public Planet updatePlanet(Planet planet) {
+    public Planet updatePlanet(Planet planet) throws PlanetNotFoundException, SwapiUnreachableException {
+
+        // Call api to get filmCount
+        int filmCount = swapiService.findPlanetByName(planet.getName()).getFilmCount();
+
+        String id = planet.getId();
+        planet.setId(null);
+
+        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
 
         // Using utils method to convert String id to a valid ObjectId
         // or a new ObjectId(), and then converting back to String.
         // This ensures that the mapper won't fail with an Illegal Argument Exception
-        planet.setId(ConversionUtils.stringToObjectId(planet.getId()).toString());
+        mongoPlanet.setId(ConversionUtils.stringToObjectId(id));
 
-        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
+        mongoPlanetRepository.findById(mongoPlanet.getId()).orElseThrow(() -> new PlanetNotFoundException(messages.getErrorPlanetNotFoundById(id)));
 
         mongoPlanet = mongoPlanetRepository.save(mongoPlanet);
-        return orikaMapper.map(mongoPlanet, Planet.class);
+
+        planet = orikaMapper.map(mongoPlanet, Planet.class);
+        planet.setFilmCount(filmCount);
+
+        return planet;
     }
 
     @Override

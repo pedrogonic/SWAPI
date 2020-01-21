@@ -38,22 +38,19 @@ public interface IPlanetService {
 
     /**
      * Updates an existing Planet
-     * <p>
-     * TODO: decide update behavior
-     * </p>
      * @param planet - must not be null
      * @return persisted Planet
+     * @throws PlanetNotFoundException - if no planet is found in the original SWAPI
+     * @throws SwapiUnreachableException - if SWAPI is unreachable
      */
-    Planet updatePlanet(Planet planet);
+    Planet updatePlanet(Planet planet) throws PlanetNotFoundException, SwapiUnreachableException;
 
     /**
      * Creates a Planet
-     * <p>
-     * TODO: decide create behavior
-     * </p>
      * @param planet - must not be null
-     * @return
+     * @return persisted Planet
      * @throws PlanetNotFoundException - if no planet is found in the original SWAPI
+     * @throws SwapiUnreachableException - if SWAPI is unreachable
      */
     Planet createPlanet(Planet planet) throws PlanetNotFoundException, SwapiUnreachableException;
 

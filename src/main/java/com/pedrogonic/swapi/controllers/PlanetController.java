@@ -45,8 +45,6 @@ public class PlanetController {
 
         List<Planet> planets = planetService.findAll(pageable, planetFilter);
 
-        // TODO: HATEOAS
-
         return orikaMapper.mapAsList(planets, PlanetDTO.class);
     }
 
@@ -59,9 +57,7 @@ public class PlanetController {
     }
 
     @PutMapping(value = "/{id}")
-    ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) {
-
-        // TODO: validate SWAPI
+    ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) throws PlanetNotFoundException, SwapiUnreachableException {
 
         planetDTO.setId(id);
 
@@ -71,17 +67,7 @@ public class PlanetController {
 
         planetDTO =  orikaMapper.map(planet, PlanetDTO.class);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .replacePath("/{id}")
-                .buildAndExpand(planetDTO.getId()).toUri();
-
-        // if created: 201
-        if (planet.getId().equals(id))
-            return ResponseEntity.status(HttpStatus.OK).body(planetDTO);
-
-        // if updated: 200
-        else
-            return ResponseEntity.created(location).body(planetDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(planetDTO);
     }
 
     @PostMapping()
