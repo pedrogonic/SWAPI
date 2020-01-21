@@ -89,6 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return apiError.toResponseEntity();
   }
 
+  // TODO: not being picked up properly
   @ExceptionHandler({DuplicateKeyException.class})
   public ResponseEntity<Object> handleDuplicateKeyException(final DuplicateKeyException ex) {
     log.error(ex.getMessage(), ex);
