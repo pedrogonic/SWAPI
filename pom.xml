@@ -103,6 +103,7 @@
                     <include>application-dev.properties</include>
                     <include>application-default.properties</include>
                     <include>api.properties</include>
+                    <include>banner.txt</include>
                 </includes>
             </resource>
         </resources>
