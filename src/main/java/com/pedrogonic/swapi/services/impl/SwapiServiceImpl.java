@@ -40,6 +40,8 @@ public class SwapiServiceImpl implements ISwapiService {
 
             swapiPlanetDTOs = callApi(name);
 
+            // TODO review
+
         if (swapiPlanetDTOs.size() == 0)
             throw new PlanetNotFoundException(messages.getErrorPlanetNotFoundInSwapi(name));
 

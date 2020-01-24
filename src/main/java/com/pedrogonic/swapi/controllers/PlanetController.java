@@ -8,7 +8,6 @@ import com.pedrogonic.swapi.model.dtos.PlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.model.mongo.MongoPlanet;
 import com.pedrogonic.swapi.services.IPlanetService;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,7 +22,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/planets")
-@Log4j2
 public class PlanetController {
 
     @Autowired
@@ -33,10 +31,10 @@ public class PlanetController {
     OrikaMapper orikaMapper;
 
 
-    @GetMapping(value = "")
+    @GetMapping("")
     List<PlanetDTO> listAll(@PageableDefault(size = Integer.MAX_VALUE, sort = MongoPlanet.FIELD_NAME) final Pageable pageable, //TODO: Remove reference to Mongo
                             @RequestParam(required = false) final String name,
-                            @RequestParam(required = false) final String id) throws SwapiUnreachableException {
+                            @RequestParam(required = false) final String id) throws SwapiUnreachableException { // TODO: Remove ID
 
         PlanetFilter planetFilter = PlanetFilter.builder()
                 .id(id)
@@ -48,7 +46,7 @@ public class PlanetController {
         return orikaMapper.mapAsList(planets, PlanetDTO.class);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     PlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException, SwapiUnreachableException {
         Planet planet = planetService.findById(id);
@@ -56,7 +54,7 @@ public class PlanetController {
         return orikaMapper.map(planet, PlanetDTO.class);
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) throws PlanetNotFoundException, SwapiUnreachableException {
 
         planetDTO.setId(id);
@@ -88,7 +86,7 @@ public class PlanetController {
         return ResponseEntity.created(location).body(planetDTO);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deletePlanet(@PathVariable String id) {
         planetService.deletePlanetById(id);

@@ -8,3 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MongoPlanetRepository extends MongoRepository<MongoPlanet, ObjectId>, MongoPlanetCustomRepository {
 }
+
+//TODO INterface for mongo

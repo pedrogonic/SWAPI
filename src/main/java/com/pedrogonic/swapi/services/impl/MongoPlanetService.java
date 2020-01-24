@@ -94,6 +94,7 @@ public class MongoPlanetService implements IPlanetService {
     @Override
     public Planet updatePlanet(Planet planet) throws PlanetNotFoundException, SwapiUnreachableException {
 
+        // TODO remove comm
         // Call api to get filmCount
         int filmCount = swapiService.findPlanetByName(planet.getName()).getFilmCount();
 

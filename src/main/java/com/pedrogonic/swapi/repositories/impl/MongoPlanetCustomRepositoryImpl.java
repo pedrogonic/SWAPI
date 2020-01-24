@@ -20,6 +20,8 @@ public class MongoPlanetCustomRepositoryImpl implements MongoPlanetCustomReposit
     public List<MongoPlanet> findAll(final Pageable pageable,PlanetFilter planetFilter) {
         Query query = new Query();
 
+        // TODO review. should always be pageable?
+
         // If the filter is empty, find all with pagination
         if (planetFilter.equals(new PlanetFilter()))
             query.with(pageable);
