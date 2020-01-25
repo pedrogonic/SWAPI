@@ -34,6 +34,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -107,7 +108,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     HttpStatus httpStatus = HttpStatus.CONFLICT;
 
     String errorMsg = ex.getMostSpecificCause().getMessage();
-    String entity = StringUtils.substringBetween(errorMsg, "collection: gq.", " index:");
+    String entity = StringUtils.substringBetween(errorMsg, "collection: swapi.", " index:");
     String key = StringUtils.substringBetween(errorMsg, "index: ", " dup key:");
 
     String userMessage = messages.getErrorDuplicateKey(entity, key);
@@ -119,46 +120,37 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return apiError.toResponseEntity();
   }
 
-  @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
-                                                                final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-    log.info(ex.getMessage(), ex);
+  private ResponseEntity<Object> handleMethodArgumentNotValidAndBindException(final List<FieldError> fieldErrors, final List<ObjectError> objectErrors,
+                                                                              final String localizedMessage,
+                                                                              final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
     HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
     headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8);
 
     //
     final List<String> errors = new ArrayList<>();
-    for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
+    for (final FieldError error : fieldErrors) {
       errors.add(error.getField() + ": " + error.getDefaultMessage());
     }
-    for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+    for (final ObjectError error : objectErrors) {
       errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
     }
     final ApiError apiError =
-        ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(errors).build();
-//    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
+            ApiError.builder().withStatus(httpStatus).withDetail(localizedMessage).withErrors(errors).build();
     return apiError.toResponseEntity();
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
+                                                                final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
+    return handleMethodArgumentNotValidAndBindException(ex.getBindingResult().getFieldErrors(), ex.getBindingResult().getGlobalErrors(),
+                                                                ex.getLocalizedMessage(), headers, status, request);
   }
 
   @Override
   protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers,
                                                        final HttpStatus status, final WebRequest request) {
-    log.info(ex.getMessage(), ex);
-    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-    headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8);
-    //
-    final List<String> errors = new ArrayList<>();
-    for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
-    }
-    for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-    }
-
-    final ApiError apiError =
-        ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(errors).build();
-//    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
-    return apiError.toResponseEntity();
+    return handleMethodArgumentNotValidAndBindException(ex.getBindingResult().getFieldErrors(), ex.getBindingResult().getGlobalErrors(),
+            ex.getLocalizedMessage(), headers, status, request);
   }
 
   @Override
