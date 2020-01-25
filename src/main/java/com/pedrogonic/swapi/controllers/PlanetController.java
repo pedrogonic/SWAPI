@@ -9,6 +9,7 @@ import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.model.dtos.db.mongo.MongoPlanet;
 import com.pedrogonic.swapi.services.IPlanetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -32,9 +33,12 @@ public class PlanetController {
 
 
     @GetMapping("")
-    List<ResponsePlanetDTO> listAll(@PageableDefault(size = Integer.MAX_VALUE, sort = MongoPlanet.FIELD_NAME) final Pageable pageable, //TODO: Remove reference to Mongo
+    List<ResponsePlanetDTO> listAll(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                     @RequestParam(required = false) final String name,
                                     @RequestParam(required = false) final String id) throws SwapiUnreachableException { // TODO: Remove ID
+
+        Pageable pageable = PageRequest.of(page, size);
 
         PlanetFilter planetFilter = PlanetFilter.builder()
                 .id(id)
