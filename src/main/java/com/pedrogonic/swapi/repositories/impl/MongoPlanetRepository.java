@@ -56,14 +56,14 @@ public class MongoPlanetRepository implements IPlanetRepository {
     }
 
     @Override
-    public Planet save(Planet dbPlanetDTO) {
-        MongoPlanet mongoPlanet = orikaMapper.map(dbPlanetDTO, MongoPlanet.class);
+    public Planet save(Planet planet) {
+        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
         return orikaMapper.map(mongoRepository.save(mongoPlanet), Planet.class);
     }
 
     @Override
-    public Planet insert(Planet dbPlanetDTO) {
-        MongoPlanet mongoPlanet = orikaMapper.map(dbPlanetDTO, MongoPlanet.class);
+    public Planet insert(Planet planet) {
+        MongoPlanet mongoPlanet = orikaMapper.map(planet, MongoPlanet.class);
         return orikaMapper.map(mongoRepository.insert(mongoPlanet), Planet.class);
     }
 

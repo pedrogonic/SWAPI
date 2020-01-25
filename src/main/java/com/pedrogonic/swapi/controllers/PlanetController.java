@@ -4,6 +4,7 @@ import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
+import com.pedrogonic.swapi.model.dtos.http.RequestPlanetDTO;
 import com.pedrogonic.swapi.model.dtos.http.ResponsePlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.services.IPlanetService;
@@ -30,7 +31,7 @@ public class PlanetController {
     OrikaMapper orikaMapper;
 
 
-    @GetMapping("")
+    @GetMapping(produces = "application/json; charset=UTF-8")
     List<ResponsePlanetDTO> listAll(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                     @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                     @RequestParam(required = false) final String name) throws SwapiUnreachableException {
@@ -46,7 +47,7 @@ public class PlanetController {
         return orikaMapper.mapAsList(planets, ResponsePlanetDTO.class);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json; charset=UTF-8")
     @ResponseStatus(HttpStatus.OK)
     ResponsePlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException, SwapiUnreachableException {
 
@@ -56,31 +57,26 @@ public class PlanetController {
         return orikaMapper.map(planet, ResponsePlanetDTO.class);
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<?> updatePlanet(@Valid @RequestBody ResponsePlanetDTO responsePlanetDTO, @PathVariable String id) throws PlanetNotFoundException, SwapiUnreachableException {
+    @PutMapping(value = "/{id}", produces = "application/json; charset=UTF-8")
+    ResponseEntity<ResponsePlanetDTO> updatePlanet(@Valid @RequestBody RequestPlanetDTO requestPlanetDTO, @PathVariable String id) throws PlanetNotFoundException, SwapiUnreachableException {
 
-        responsePlanetDTO.setId(id);
-
-        Planet planet = orikaMapper.map(responsePlanetDTO, Planet.class);
-
+        Planet planet = orikaMapper.map(requestPlanetDTO, Planet.class);
+        planet.setId(id);
         planet = planetService.updatePlanet(planet);
 
-        responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
+        ResponsePlanetDTO responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
 
         return ResponseEntity.status(HttpStatus.OK).body(responsePlanetDTO);
     }
 
-    @PostMapping()
+    @PostMapping(produces = "application/json; charset=UTF-8")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> createPlanet(@Valid @RequestBody ResponsePlanetDTO responsePlanetDTO) throws PlanetNotFoundException, SwapiUnreachableException {
-        // TODO RequestPlanet
-        responsePlanetDTO.setId(null);
-
-        Planet planet = orikaMapper.map(responsePlanetDTO, Planet.class);
+    ResponseEntity<ResponsePlanetDTO> createPlanet(@Valid @RequestBody RequestPlanetDTO requestPlanetDTO) throws PlanetNotFoundException, SwapiUnreachableException {
+        Planet planet = orikaMapper.map(requestPlanetDTO, Planet.class);
 
         planet = planetService.createPlanet(planet);
 
-        responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
+        ResponsePlanetDTO responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                             .replacePath("/{id}")
@@ -89,7 +85,7 @@ public class PlanetController {
         return ResponseEntity.created(location).body(responsePlanetDTO);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json; charset=UTF-8")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deletePlanet(@PathVariable String id) {
         planetService.deletePlanetById(id);
