@@ -1,4 +1,4 @@
-package com.pedrogonic.swapi.model.mongo;
+package com.pedrogonic.swapi.model.dtos.db.mongo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

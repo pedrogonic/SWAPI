@@ -3,7 +3,6 @@ package com.pedrogonic.swapi.services;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
-import com.pedrogonic.swapi.model.dtos.SwapiPlanetDTO;
 
 import java.util.List;
 

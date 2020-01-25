@@ -24,7 +24,6 @@ The following technologies were applied: Java, Spring Boot, MongoDB, Docker, Cir
 
 When running the application, endpoint documentation generated with Swagger 3.0 can be found in the root of the api [localhost:8090/swapi/](http://localhost:8090/swapi/).
 
-DISCLAIMER: testing the api through this interface is pending support.
 
 ## Setup
 
@@ -47,5 +46,7 @@ The api container is generated first instantiating a maven image to compile the 
 ## TODO
 1. - [ ] Tests
 2. - [ ] CircleCI
-3. - [ ] Fix Swagger docs
-4. - [ ] Cache (?)
+3. - [ ] Exceptions and Exception Handler
+4. - [ ] Localization
+5. - [x] Fix Swagger docs
+6. - [ ] Cache (?)

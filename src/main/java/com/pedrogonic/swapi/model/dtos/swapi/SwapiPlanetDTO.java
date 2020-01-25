@@ -1,4 +1,4 @@
-package com.pedrogonic.swapi.model.dtos;
+package com.pedrogonic.swapi.model.dtos.swapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

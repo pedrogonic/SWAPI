@@ -5,8 +5,8 @@ import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
-import com.pedrogonic.swapi.model.dtos.SwapiPlanetDTO;
-import com.pedrogonic.swapi.model.dtos.SwapiSearchDTO;
+import com.pedrogonic.swapi.model.dtos.swapi.SwapiPlanetDTO;
+import com.pedrogonic.swapi.model.dtos.swapi.SwapiSearchDTO;
 import com.pedrogonic.swapi.services.ISwapiService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,7 @@ public class SwapiServiceImpl implements ISwapiService {
     @Override
     public Planet findPlanetByName(String name) throws PlanetNotFoundException, SwapiUnreachableException {
 
-        List<SwapiPlanetDTO> swapiPlanetDTOs;
-
-            swapiPlanetDTOs = callApi(name);
+        List<SwapiPlanetDTO> swapiPlanetDTOs = callApi(name);
 
         if (swapiPlanetDTOs.size() == 0)
             throw new PlanetNotFoundException(messages.getErrorPlanetNotFoundInSwapi(name));
@@ -91,7 +89,6 @@ public class SwapiServiceImpl implements ISwapiService {
         SwapiSearchDTO swapiSearchDTO = SwapiSearchDTO.builder().next(uriBuilder.build().toString()).build();
 
         try {
-
             while (swapiSearchDTO.getNext() != null) {
                 log.info("Calling SWAPI URI: " + swapiSearchDTO.getNext());
                 swapiSearchDTO = restTemplate.getForObject(swapiSearchDTO.getNext(), SwapiSearchDTO.class);
