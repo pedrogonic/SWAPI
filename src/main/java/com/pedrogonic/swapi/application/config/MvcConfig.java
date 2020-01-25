@@ -32,7 +32,7 @@ public class MvcConfig extends WebMvcConfigurationSupport {
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.US);
+        slr.setDefaultLocale(new Locale("en", "US"));
         return slr;
     }
 
@@ -56,7 +56,7 @@ public class MvcConfig extends WebMvcConfigurationSupport {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.addBasenames("classpath:messages");
+        messageSource.addBasenames("messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

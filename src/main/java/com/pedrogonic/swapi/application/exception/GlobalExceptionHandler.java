@@ -78,76 +78,80 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return apiError.toResponseEntity();
   }
 
-  @ExceptionHandler({EntityNotFoundException.class})
-  public ResponseEntity<Object> handleEntityNotFoundException(final EntityNotFoundException ex) {
+  @ExceptionHandler({ResourceNotFoundException.class})
+  public ResponseEntity<Object> handleResourceNotFoundException(final ResourceNotFoundException ex) {
     log.error(ex.getMessage(), ex);
     HttpStatus httpStatus = HttpStatus.NOT_FOUND;
     //
     final ApiError apiError =
-        ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())
-            .build();
+            ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())
+                    .build();
     return apiError.toResponseEntity();
   }
 
-  // TODO: not being picked up properly REVIEW EVERYTHING
+  @ExceptionHandler({SwapiUnreachableException.class})
+  public ResponseEntity<Object> handleApiCallException(final SwapiUnreachableException ex) {
+    log.error(ex.getMessage(), ex);
+    HttpStatus httpStatus = HttpStatus.BAD_GATEWAY;
+    //
+    final ApiError apiError =
+            ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())
+                    .build();
+    return apiError.toResponseEntity();
+  }
+
+  // TODO: not being picked up properly
   @ExceptionHandler({DuplicateKeyException.class})
   public ResponseEntity<Object> handleDuplicateKeyException(final DuplicateKeyException ex) {
     log.error(ex.getMessage(), ex);
     HttpStatus httpStatus = HttpStatus.CONFLICT;
 
     String errorMsg = ex.getMostSpecificCause().getMessage();
-    String entity = StringUtils.substringBetween(errorMsg, "collection: gq.", " index:");
+    String entity = StringUtils.substringBetween(errorMsg, "collection: swapi.", " index:");
     String key = StringUtils.substringBetween(errorMsg, "index: ", " dup key:");
 
-    String userMessage = messages.getErrorDuplicateKey(entity, key);
+    String errorMessage = messages.getErrorDuplicateKey(entity, key);
+//    String errorMessage = "This is a hardcoded error!";
+
 
     final ApiError apiError =
         ApiError.builder(httpStatus).withDetail("Some unique fields have duplicated stored values.")
-            .withMessage(userMessage).build();
+            .withMessage(errorMessage).build();
 
+    return apiError.toResponseEntity();
+  }
+
+  private ResponseEntity<Object> handleMethodArgumentNotValidAndBindException(final List<FieldError> fieldErrors, final List<ObjectError> objectErrors,
+                                                                              final String localizedMessage,
+                                                                              final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8);
+
+    //
+    final List<String> errors = new ArrayList<>();
+    for (final FieldError error : fieldErrors) {
+      errors.add(error.getField() + ": " + error.getDefaultMessage());
+    }
+    for (final ObjectError error : objectErrors) {
+      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+    }
+    final ApiError apiError =
+            ApiError.builder().withStatus(httpStatus).withDetail(localizedMessage).withErrors(errors).build();
     return apiError.toResponseEntity();
   }
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
                                                                 final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-    log.info(ex.getMessage(), ex);
-    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-    headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8);
-
-    //
-    final List<String> errors = new ArrayList<>();
-    for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
-    }
-    for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-    }
-    final ApiError apiError =
-        ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(errors).build();
-//    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
-    return apiError.toResponseEntity();
+    return handleMethodArgumentNotValidAndBindException(ex.getBindingResult().getFieldErrors(), ex.getBindingResult().getGlobalErrors(),
+                                                                ex.getLocalizedMessage(), headers, status, request);
   }
 
   @Override
   protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers,
                                                        final HttpStatus status, final WebRequest request) {
-    log.info(ex.getMessage(), ex);
-    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-    headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8);
-    //
-    final List<String> errors = new ArrayList<>();
-    for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
-    }
-    for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-    }
-
-    final ApiError apiError =
-        ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(errors).build();
-//    return handleExceptionInternal(ex, apiError, headers, httpStatus, request);
-    return apiError.toResponseEntity();
+    return handleMethodArgumentNotValidAndBindException(ex.getBindingResult().getFieldErrors(), ex.getBindingResult().getGlobalErrors(),
+            ex.getLocalizedMessage(), headers, status, request);
   }
 
   @Override
