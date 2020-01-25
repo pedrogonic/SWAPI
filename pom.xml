@@ -107,6 +107,8 @@
                     <include>application-dev.properties</include>
                     <include>application-default.properties</include>
                     <include>api.properties</include>
+                    <include>messages.properties</include>
+                    <include>messages_en_US.properties</include>
                     <include>banner.txt</include>
                 </includes>
             </resource>

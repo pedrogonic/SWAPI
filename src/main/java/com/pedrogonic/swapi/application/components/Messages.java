@@ -6,6 +6,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 
 @Component
@@ -14,7 +15,7 @@ public class Messages {
   private final MessageSourceAccessor accessor;
 
   public Messages(final MessageSource messageSource) {
-    this.accessor = new MessageSourceAccessor(messageSource, LocaleContextHolder.getLocale());
+    this.accessor = new MessageSourceAccessor(messageSource, Locale.US);
   }
 
   private String get(final String code) {

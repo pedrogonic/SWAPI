@@ -7,6 +7,7 @@ import com.pedrogonic.swapi.model.dtos.db.mongo.MongoPlanet;
 import com.pedrogonic.swapi.repositories.IPlanetRepository;
 import com.pedrogonic.swapi.repositories.IMongoPlanetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

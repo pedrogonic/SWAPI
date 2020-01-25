@@ -34,7 +34,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -111,11 +110,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     String entity = StringUtils.substringBetween(errorMsg, "collection: swapi.", " index:");
     String key = StringUtils.substringBetween(errorMsg, "index: ", " dup key:");
 
-    String userMessage = messages.getErrorDuplicateKey(entity, key);
+    String errorMessage = messages.getErrorDuplicateKey(entity, key);
+//    String errorMessage = "This is a hardcoded error!";
+
 
     final ApiError apiError =
         ApiError.builder(httpStatus).withDetail("Some unique fields have duplicated stored values.")
-            .withMessage(userMessage).build();
+            .withMessage(errorMessage).build();
 
     return apiError.toResponseEntity();
   }
