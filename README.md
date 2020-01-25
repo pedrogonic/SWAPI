@@ -47,5 +47,5 @@ The api container is generated first instantiating a maven image to compile the 
 ## TODO
 1. - [ ] Tests
 2. - [ ] CircleCI
-3. - [ ] Fix Swagger docs
+3. - [x] Fix Swagger docs
 4. - [ ] Cache (?)
