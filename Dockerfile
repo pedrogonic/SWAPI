@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-11-openj9 AS MAVEN_IMAGE
+FROM maven:3.6.1-jdk-11-slim AS MAVEN_IMAGE
 WORKDIR /app
 ADD pom.xml /app
 RUN mvn -e -U dependency:go-offline  --fail-never
