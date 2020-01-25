@@ -1,5 +1,6 @@
-package com.pedrogonic.swapi.model.mongo;
+package com.pedrogonic.swapi.model.dtos.db.mongo;
 
+import com.pedrogonic.swapi.model.dtos.db.DbPlanetDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
@@ -18,7 +20,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @Validated
 @Document(collection = MongoPlanet.PLANET_COLLECTION)
-public class MongoPlanet {
+public class MongoPlanet extends DbPlanetDTO {
 
     public static final String PLANET_COLLECTION = "planets";
     public static final String FIELD_ID = "_id";

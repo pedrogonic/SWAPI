@@ -38,6 +38,9 @@ public interface IPlanetService {
 
     /**
      * Updates an existing Planet
+     * <p>
+     * Planet with same name must exist in the original SWAPI database.
+     * </p>
      * @param planet - must not be null
      * @return persisted Planet
      * @throws PlanetNotFoundException - if no planet is found in the original SWAPI
@@ -47,6 +50,9 @@ public interface IPlanetService {
 
     /**
      * Creates a Planet
+     * <p>
+     * Planet with same name must exist in the original SWAPI database.
+     * </p>
      * @param planet - must not be null
      * @return persisted Planet
      * @throws PlanetNotFoundException - if no planet is found in the original SWAPI

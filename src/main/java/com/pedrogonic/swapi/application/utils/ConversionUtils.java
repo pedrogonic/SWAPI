@@ -4,6 +4,8 @@ import org.bson.types.ObjectId;
 
 public class ConversionUtils {
 
+    // TODO move this to repositories.mongo
+
     /**
      * Converts a String to a valid ObjectId
      * <p>

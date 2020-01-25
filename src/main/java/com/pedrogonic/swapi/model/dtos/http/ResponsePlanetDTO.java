@@ -1,4 +1,4 @@
-package com.pedrogonic.swapi.model.dtos;
+package com.pedrogonic.swapi.model.dtos.http;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlanetDTO {
+public class ResponsePlanetDTO {
 
 
     private String id;

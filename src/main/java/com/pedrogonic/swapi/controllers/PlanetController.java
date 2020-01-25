@@ -4,9 +4,9 @@ import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
-import com.pedrogonic.swapi.model.dtos.PlanetDTO;
+import com.pedrogonic.swapi.model.dtos.http.ResponsePlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
-import com.pedrogonic.swapi.model.mongo.MongoPlanet;
+import com.pedrogonic.swapi.model.dtos.db.mongo.MongoPlanet;
 import com.pedrogonic.swapi.services.IPlanetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -32,9 +32,9 @@ public class PlanetController {
 
 
     @GetMapping("")
-    List<PlanetDTO> listAll(@PageableDefault(size = Integer.MAX_VALUE, sort = MongoPlanet.FIELD_NAME) final Pageable pageable, //TODO: Remove reference to Mongo
-                            @RequestParam(required = false) final String name,
-                            @RequestParam(required = false) final String id) throws SwapiUnreachableException { // TODO: Remove ID
+    List<ResponsePlanetDTO> listAll(@PageableDefault(size = Integer.MAX_VALUE, sort = MongoPlanet.FIELD_NAME) final Pageable pageable, //TODO: Remove reference to Mongo
+                                    @RequestParam(required = false) final String name,
+                                    @RequestParam(required = false) final String id) throws SwapiUnreachableException { // TODO: Remove ID
 
         PlanetFilter planetFilter = PlanetFilter.builder()
                 .id(id)
@@ -43,47 +43,50 @@ public class PlanetController {
 
         List<Planet> planets = planetService.findAll(pageable, planetFilter);
 
-        return orikaMapper.mapAsList(planets, PlanetDTO.class);
+        return orikaMapper.mapAsList(planets, ResponsePlanetDTO.class);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    PlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException, SwapiUnreachableException {
+    ResponsePlanetDTO getById(@PathVariable final String id) throws PlanetNotFoundException, SwapiUnreachableException {
+
+
         Planet planet = planetService.findById(id);
 
-        return orikaMapper.map(planet, PlanetDTO.class);
+        return orikaMapper.map(planet, ResponsePlanetDTO.class);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updatePlanet(@Valid @RequestBody PlanetDTO planetDTO, @PathVariable String id) throws PlanetNotFoundException, SwapiUnreachableException {
+    ResponseEntity<?> updatePlanet(@Valid @RequestBody ResponsePlanetDTO responsePlanetDTO, @PathVariable String id) throws PlanetNotFoundException, SwapiUnreachableException {
 
-        planetDTO.setId(id);
+        responsePlanetDTO.setId(id);
 
-        Planet planet = orikaMapper.map(planetDTO, Planet.class);
+        Planet planet = orikaMapper.map(responsePlanetDTO, Planet.class);
 
         planet = planetService.updatePlanet(planet);
 
-        planetDTO =  orikaMapper.map(planet, PlanetDTO.class);
+        responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
 
-        return ResponseEntity.status(HttpStatus.OK).body(planetDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(responsePlanetDTO);
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> createPlanet(@Valid @RequestBody PlanetDTO planetDTO) throws PlanetNotFoundException, SwapiUnreachableException {
-        planetDTO.setId(null);
+    ResponseEntity<?> createPlanet(@Valid @RequestBody ResponsePlanetDTO responsePlanetDTO) throws PlanetNotFoundException, SwapiUnreachableException {
+        // TODO RequestPlanet
+        responsePlanetDTO.setId(null);
 
-        Planet planet = orikaMapper.map(planetDTO, Planet.class);
+        Planet planet = orikaMapper.map(responsePlanetDTO, Planet.class);
 
         planet = planetService.createPlanet(planet);
 
-        planetDTO =  orikaMapper.map(planet, PlanetDTO.class);
+        responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                             .replacePath("/{id}")
-                            .buildAndExpand(planetDTO.getId()).toUri();
+                            .buildAndExpand(responsePlanetDTO.getId()).toUri();
 
-        return ResponseEntity.created(location).body(planetDTO);
+        return ResponseEntity.created(location).body(responsePlanetDTO);
     }
 
     @DeleteMapping("/{id}")
