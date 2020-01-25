@@ -3,12 +3,10 @@ package com.pedrogonic.swapi.repositories;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-//@Repository
 public interface IPlanetRepository {
 
     /**
@@ -27,29 +25,33 @@ public interface IPlanetRepository {
     List<Planet> findAll(Pageable pageable, PlanetFilter planetFilter);
 
     /**
-     * TODO
+     * Returns planet with provided id
      * @param id
-     * @return
+     * @return updated planet
      */
     Optional<Planet> findById(Object id);
 
     /**
-     * TODO
-     * @param dbPlanetDTO
-     * @return
+     * Updates planet in database with same id
+     * <p>
+     * Saves an existing planet. Planet passed to this must must contain a valid id to be matched with object in
+     * database.
+     * </p>
+     * @param planet - must not be null. must have valid id.
+     * @return saved planet
      */
-    Planet save(Planet dbPlanetDTO);
+    Planet save(Planet planet);
 
     /**
-     * TODO
-     * @param dbPlanetDTO
-     * @return
+     * Inserts a new planet
+     * @param planet - must not be null.
+     * @return inserted planet
      */
-    Planet insert(Planet dbPlanetDTO);
+    Planet insert(Planet planet);
 
     /**
-     * TODO
-     * @param id
+     * Deletes planet with given id
+     * @param id - must not be null
      */
     void deleteById(Object id);
 
