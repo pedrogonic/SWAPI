@@ -78,14 +78,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return apiError.toResponseEntity();
   }
 
-  @ExceptionHandler({EntityNotFoundException.class})
-  public ResponseEntity<Object> handleEntityNotFoundException(final EntityNotFoundException ex) {
+  @ExceptionHandler({ResourceNotFoundException.class})
+  public ResponseEntity<Object> handleResourceNotFoundException(final ResourceNotFoundException ex) {
     log.error(ex.getMessage(), ex);
     HttpStatus httpStatus = HttpStatus.NOT_FOUND;
     //
     final ApiError apiError =
-        ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())
-            .build();
+            ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())
+                    .build();
+    return apiError.toResponseEntity();
+  }
+
+  @ExceptionHandler({SwapiUnreachableException.class})
+  public ResponseEntity<Object> handleApiCallException(final SwapiUnreachableException ex) {
+    log.error(ex.getMessage(), ex);
+    HttpStatus httpStatus = HttpStatus.BAD_GATEWAY;
+    //
+    final ApiError apiError =
+            ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())
+                    .build();
     return apiError.toResponseEntity();
   }
 
