@@ -31,16 +31,9 @@ public class MongoPlanetRepository implements IPlanetRepository {
 
     @Override
     public List<Planet> findAll(final Pageable pageable, PlanetFilter planetFilter) {
-        Query query = new Query();
+        Query query = createFilterQuery(planetFilter);
 
-        // TODO review. should always be pageable?
-
-        // If the filter is empty, find all with pagination
-        if (planetFilter.equals(new PlanetFilter()))
-            query.with(pageable);
-        // Else, create a query
-        else
-            query = createFilterQuery(planetFilter);
+        query.with(pageable);
 
         return orikaMapper.mapAsList(mongoTemplate.find(query, MongoPlanet.class), Planet.class);
     }
@@ -82,9 +75,6 @@ public class MongoPlanetRepository implements IPlanetRepository {
 
     private Query createFilterQuery(final PlanetFilter planetFilter) {
         Query query = new Query();
-
-        if (planetFilter.getId() != null)
-            query.addCriteria(Criteria.where(MongoPlanet.FIELD_ID).is(planetFilter.getId()));
 
         if (planetFilter.getName() != null)
             query.addCriteria(Criteria.where(MongoPlanet.FIELD_NAME).is(planetFilter.getName()));

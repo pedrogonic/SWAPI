@@ -35,13 +35,11 @@ public class PlanetController {
     @GetMapping("")
     List<ResponsePlanetDTO> listAll(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                     @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                    @RequestParam(required = false) final String name,
-                                    @RequestParam(required = false) final String id) throws SwapiUnreachableException { // TODO: Remove ID
+                                    @RequestParam(required = false) final String name) throws SwapiUnreachableException {
 
         Pageable pageable = PageRequest.of(page, size);
 
         PlanetFilter planetFilter = PlanetFilter.builder()
-                .id(id)
                 .name(name)
                 .build();
 

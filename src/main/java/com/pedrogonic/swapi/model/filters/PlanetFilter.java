@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PlanetFilter {
 
-    private String id;
     private String name;
 
 }
