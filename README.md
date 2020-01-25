@@ -44,9 +44,10 @@ This starts up 2 containers: one for the MongoDB and one for the api.
 The api container is generated first instantiating a maven image to compile the code and then copying the generated classes to a open-jdk container that is responsible to start the application at host's port 8090.
 
 ## TODO
-1. - [ ] Tests
-2. - [ ] CircleCI
-3. - [ ] Exceptions and Exception Handler
-4. - [ ] Localization
-5. - [x] Fix Swagger docs
-6. - [ ] Cache (?)
+1. - [x] HATEOAS
+2. - [ ] Tests
+3. - [ ] CircleCI
+4. - [ ] Exceptions and Exception Handler
+5. - [ ] Localization
+6. - [x] Fix Swagger docs
+7. - [ ] Cache (?)
