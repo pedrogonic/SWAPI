@@ -1,10 +1,8 @@
-package com.pedrogonic.swapi.application.utils;
+package com.pedrogonic.swapi.repositories.mongo;
 
 import org.bson.types.ObjectId;
 
-public class ConversionUtils {
-
-    // TODO move this to repositories.mongo
+public class IdConverter {
 
     /**
      * Converts a String to a valid ObjectId

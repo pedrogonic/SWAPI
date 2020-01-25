@@ -1,7 +1,7 @@
 package com.pedrogonic.swapi.application.config;
 
 import com.pedrogonic.swapi.repositories.IPlanetRepository;
-import com.pedrogonic.swapi.repositories.impl.MongoPlanetRepository;
+import com.pedrogonic.swapi.repositories.mongo.MongoPlanetRepository;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

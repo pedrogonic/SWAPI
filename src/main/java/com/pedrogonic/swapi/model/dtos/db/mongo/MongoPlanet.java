@@ -1,6 +1,5 @@
 package com.pedrogonic.swapi.model.dtos.db.mongo;
 
-import com.pedrogonic.swapi.model.dtos.db.DbPlanetDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @Validated
 @Document(collection = MongoPlanet.PLANET_COLLECTION)
-public class MongoPlanet extends DbPlanetDTO {
+public class MongoPlanet {
 
     public static final String PLANET_COLLECTION = "planets";
     public static final String FIELD_ID = "_id";

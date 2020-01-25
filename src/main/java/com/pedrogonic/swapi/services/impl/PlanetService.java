@@ -4,14 +4,12 @@ import com.pedrogonic.swapi.application.components.Messages;
 import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
-import com.pedrogonic.swapi.application.utils.ConversionUtils;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.repositories.IPlanetRepository;
 import com.pedrogonic.swapi.services.IPlanetService;
 import com.pedrogonic.swapi.services.ISwapiService;
 import lombok.extern.log4j.Log4j2;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -116,7 +114,6 @@ public class PlanetService implements IPlanetService {
 
     @Override
     public void deletePlanetById(String id) {
-        ObjectId objectId = ConversionUtils.stringToObjectId(id);
-        planetRepository.deleteById(objectId);
+        planetRepository.deleteById(id);
     }
 }

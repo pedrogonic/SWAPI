@@ -78,6 +78,7 @@ public class PlanetController {
 
         ResponsePlanetDTO responsePlanetDTO =  orikaMapper.map(planet, ResponsePlanetDTO.class);
 
+        // TODO: remove or implement HATEOAS
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                             .replacePath("/{id}")
                             .buildAndExpand(responsePlanetDTO.getId()).toUri();

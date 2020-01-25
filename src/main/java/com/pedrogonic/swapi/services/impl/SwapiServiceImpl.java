@@ -36,11 +36,7 @@ public class SwapiServiceImpl implements ISwapiService {
     @Override
     public Planet findPlanetByName(String name) throws PlanetNotFoundException, SwapiUnreachableException {
 
-        List<SwapiPlanetDTO> swapiPlanetDTOs;
-
-            swapiPlanetDTOs = callApi(name);
-
-            // TODO review
+        List<SwapiPlanetDTO> swapiPlanetDTOs = callApi(name);
 
         if (swapiPlanetDTOs.size() == 0)
             throw new PlanetNotFoundException(messages.getErrorPlanetNotFoundInSwapi(name));
@@ -93,7 +89,6 @@ public class SwapiServiceImpl implements ISwapiService {
         SwapiSearchDTO swapiSearchDTO = SwapiSearchDTO.builder().next(uriBuilder.build().toString()).build();
 
         try {
-
             while (swapiSearchDTO.getNext() != null) {
                 log.info("Calling SWAPI URI: " + swapiSearchDTO.getNext());
                 swapiSearchDTO = restTemplate.getForObject(swapiSearchDTO.getNext(), SwapiSearchDTO.class);
