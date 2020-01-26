@@ -50,4 +50,6 @@ The api container is generated first instantiating a maven image to compile the 
 4. - [x] Exceptions and Exception Handler
 5. - [ ] Localization
 6. - [x] Fix Swagger docs
-7. - [ ] Cache (?)
+7. Cache
+    - [ ] Cache API - Cache this API responses
+    - [ ] Cache SWAPI - Cache original SWAPI calls
