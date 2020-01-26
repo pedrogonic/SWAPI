@@ -1,6 +1,5 @@
 package com.pedrogonic.swapi.controllers;
 
-import com.pedrogonic.swapi.application.components.Messages;
 import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.http.RequestPlanetDTO;
@@ -9,17 +8,11 @@ import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.services.IPlanetService;
 import lombok.SneakyThrows;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
@@ -32,11 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,9 +39,6 @@ class PlanetControllerTest {
     @Mock
     OrikaMapper orikaMapper;
 
-//    @Mock
-//    Messages messages;
-//
     @Mock
     PlanetResourceAssembler assembler;
 
@@ -106,9 +93,9 @@ class PlanetControllerTest {
                 .build();
         planetDTOList.add(responsePlanetDTO);
 
-        model = new EntityModel<>(responsePlanetDTO);
+        pageable = PageRequest.of(0, 10);
 
-        given(assembler.toModel(any())).willReturn(model);
+        model = new EntityModel<>(responsePlanetDTO);
 
         mockMvc = MockMvcBuilders.standaloneSetup(planetController).build();
     }
@@ -121,10 +108,10 @@ class PlanetControllerTest {
     @Test
     @DisplayName("GET planets/")
     void listAllWithNoArguments() {
-        pageable = PageRequest.of(0, 10);
         planetFilter = PlanetFilter.builder().build();
         given(orikaMapper.mapAsList(planets, ResponsePlanetDTO.class)).willReturn(planetDTOList);
         given(planetService.findAll(pageable, planetFilter)).willReturn(planets);
+        given(assembler.toModel(any())).willReturn(model);
 
         final ResultActions result = mockMvc.perform(get("/planets"));
         result
@@ -146,32 +133,81 @@ class PlanetControllerTest {
 
     }
 
+    @SneakyThrows
     @Test
-    void searchByName() {
+    @DisplayName("GET planets/?name={existingPlanetName}")
+    void searchByExistingPlanetName() {
+        final String QUERIED_NAME = "Tatooine";
+        planetFilter = PlanetFilter.builder().name(QUERIED_NAME).build();
+        given(orikaMapper.mapAsList(planets, ResponsePlanetDTO.class)).willReturn(planetDTOList);
+        given(planetService.findAll(pageable, planetFilter)).willReturn(planets);
+        given(assembler.toModel(any())).willReturn(model);
 
-
+        final ResultActions result = mockMvc.perform(get("/planets")
+                                                        .queryParam("name",QUERIED_NAME));
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                ;
+        result
+                .andExpect(jsonPath("content.length()", is(1)))
+                ;
+        result
+                .andExpect(jsonPath("content[0].id", is(planet.getId())))
+                .andExpect(jsonPath("content[0].name", is(planet.getName())))
+                .andExpect(jsonPath("content[0].terrain", is(planet.getTerrain())))
+                .andExpect(jsonPath("content[0].climate", is(planet.getClimate())))
+                .andExpect(jsonPath("content[0].filmCount", is(planet.getFilmCount())))
+                ;
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("GET planets/?name={nonExistingPlanetName}")
+    void searchByNonExistingPlanetName() {
+        final String QUERIED_NAME = "Naboo";pageable = PageRequest.of(0, 10);
+        planetFilter = PlanetFilter.builder().name(QUERIED_NAME).build();
+        given(orikaMapper.mapAsList(new ArrayList<>(), ResponsePlanetDTO.class)).willReturn(new ArrayList<>());
+        given(planetService.findAll(pageable, planetFilter)).willReturn(new ArrayList<>());
+
+        final ResultActions result = mockMvc.perform(get("/planets")
+                .queryParam("name",QUERIED_NAME));
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+        ;
+        result
+                .andExpect(jsonPath("content.length()", is(0)))
+        ;
+    }
+
+    @Disabled
     @Test
     void searchById() {
     }
 
+    @Disabled
     @Test
     void whenPutRequestToPlanetsAndValidPlanet() {
     }
 
+    @Disabled
     @Test
     void whenPutRequestToPlanetsAndInvalidPlanet() {
     }
 
+    @Disabled
     @Test
     void whenPostRequestToPlanetsAndValidPlanet() {
     }
 
+    @Disabled
     @Test
     void whenPostRequestToPlanetsAndInvalidPlanet() {
     }
 
+    @Disabled
     @Test
     void deletePlanet() {
     }
