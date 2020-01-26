@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.GlobalExceptionHandler;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
+import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.http.RequestPlanetDTO;
 import com.pedrogonic.swapi.model.dtos.http.ResponsePlanetDTO;
@@ -66,7 +67,6 @@ class PlanetControllerTest {
     Pageable pageable;
     PlanetFilter planetFilter;
 
-    @SneakyThrows
     @BeforeEach
     void setUp() {
         planets = new ArrayList<>();
@@ -174,6 +174,19 @@ class PlanetControllerTest {
 
     @SneakyThrows
     @Test
+    @DisplayName("GET planets - SWAPI error/timeout")
+    void whenGetRequestToPlanetsAndSwapiIsUnreachable() {
+        planetFilter = PlanetFilter.builder().build();
+        given(planetService.findAll(pageable, planetFilter)).willThrow(new SwapiUnreachableException("message"));
+
+        final ResultActions result = mockMvc.perform(get("/planets"));
+
+        result
+                .andExpect(status().isBadGateway());
+    }
+
+    @SneakyThrows
+    @Test
     @DisplayName("GET planets/?name={nonExistingPlanetName}")
     void whenSearchByNonExistingPlanetName() {
         final String QUERIED_NAME = "Naboo";
@@ -219,6 +232,18 @@ class PlanetControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 ;
         verifyJson(result);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("GET planets/{existingPlanetId} - SWAPI error/timeout")
+    void whenSearchByExistingPlanetIdAndSwapiIsUnreachable() {
+        given(planetService.findById(any())).willThrow(new SwapiUnreachableException("message"));
+
+        final ResultActions result = mockMvc.perform(get("/planets/" + planet.getId()));
+
+        result
+                .andExpect(status().isBadGateway());
     }
 
     @SneakyThrows
@@ -269,6 +294,21 @@ class PlanetControllerTest {
 
     @SneakyThrows
     @Test
+    @DisplayName("PUT planets/{existingPlanetId} - SWAPI error/timeout")
+    void whenPutRequestToPlanetsAndSwapiIsUnreachable() {
+        given(orikaMapper.map(validRequestPlanetDTO, Planet.class)).willReturn(planet);
+        given(planetService.updatePlanet(planet)).willThrow(new SwapiUnreachableException("message"));
+
+        final ResultActions result = mockMvc.perform(put("/planets/" + planet.getId())
+                                                .content(mapper.writeValueAsString(validRequestPlanetDTO))
+                                                .contentType(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isBadGateway());
+    }
+
+    @SneakyThrows
+    @Test
     @DisplayName("PUT planets/{nonExistingPlanetId}")
     void whenPutRequestByNonExistingPlanetId() {
         final String ID = "NON_EXISTING_ID";
@@ -312,6 +352,21 @@ class PlanetControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
         ;
         verifyJson(result);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("POST planets - SWAPI error/timeout")
+    void whenPostRequestToPlanetsAndSwapiIsUnreachable() {
+        given(orikaMapper.map(validRequestPlanetDTO, Planet.class)).willReturn(planet);
+        given(planetService.createPlanet(planet)).willThrow(new SwapiUnreachableException("message"));
+
+        final ResultActions result = mockMvc.perform(post("/planets")
+                .content(mapper.writeValueAsString(validRequestPlanetDTO))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isBadGateway());
     }
 
     @SneakyThrows
