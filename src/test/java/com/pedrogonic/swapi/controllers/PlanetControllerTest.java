@@ -2,6 +2,8 @@ package com.pedrogonic.swapi.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pedrogonic.swapi.application.components.OrikaMapper;
+import com.pedrogonic.swapi.application.exception.GlobalExceptionHandler;
+import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.http.RequestPlanetDTO;
 import com.pedrogonic.swapi.model.dtos.http.ResponsePlanetDTO;
@@ -54,7 +56,8 @@ class PlanetControllerTest {
     private static String BASE_PATH = "http://localhost/planets";
 
     Planet planet;
-    RequestPlanetDTO requestPlanetDTO;
+    RequestPlanetDTO validRequestPlanetDTO;
+    RequestPlanetDTO invalidRequestPlanetDTO;
     ResponsePlanetDTO responsePlanetDTO;
     EntityModel<ResponsePlanetDTO> model;
     ObjectId objectid;
@@ -77,10 +80,16 @@ class PlanetControllerTest {
                 .build();
         planets.add(planet);
 
-        requestPlanetDTO = RequestPlanetDTO.builder()
+        validRequestPlanetDTO = RequestPlanetDTO.builder()
                     .name("Tatooine")
                     .climate("arid")
                     .terrain("desert")
+                .build();
+
+        invalidRequestPlanetDTO = RequestPlanetDTO.builder()
+                .name("")
+                .climate("")
+                .terrain("")
                 .build();
 
         planetDTOList = new ArrayList<>();
@@ -97,7 +106,9 @@ class PlanetControllerTest {
 
         model = new EntityModel<>(responsePlanetDTO);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(planetController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(planetController)
+                        .setControllerAdvice(new GlobalExceptionHandler())
+                        .build();
     }
 
     @AfterEach
@@ -165,7 +176,8 @@ class PlanetControllerTest {
     @Test
     @DisplayName("GET planets/?name={nonExistingPlanetName}")
     void whenSearchByNonExistingPlanetName() {
-        final String QUERIED_NAME = "Naboo";pageable = PageRequest.of(0, 10);
+        final String QUERIED_NAME = "Naboo";
+        pageable = PageRequest.of(0, 10);
         planetFilter = PlanetFilter.builder().name(QUERIED_NAME).build();
         given(orikaMapper.mapAsList(new ArrayList<>(), ResponsePlanetDTO.class)).willReturn(new ArrayList<>());
         given(planetService.findAll(pageable, planetFilter)).willReturn(new ArrayList<>());
@@ -211,15 +223,29 @@ class PlanetControllerTest {
 
     @SneakyThrows
     @Test
+    @DisplayName("GET planets/{nonExistingPlanetId}")
+    void whenSearchByNonExistingPlanetId() {
+        final String ID = "NON_EXISTING_ID";
+        final Exception exception = new PlanetNotFoundException("message");
+        given(planetService.findById(ID)).willThrow(exception);
+
+        final ResultActions result = mockMvc.perform(get("/planets/" + ID));
+
+        result
+                .andExpect(status().isNotFound());
+    }
+
+    @SneakyThrows
+    @Test
     @DisplayName("PUT planets/{existingPlanetId}")
     void whenPutRequestToPlanetsAndValidPlanet() {
         given(orikaMapper.map(planet, ResponsePlanetDTO.class)).willReturn(responsePlanetDTO);
-        given(orikaMapper.map(requestPlanetDTO, Planet.class)).willReturn(planet);
+        given(orikaMapper.map(validRequestPlanetDTO, Planet.class)).willReturn(planet);
         given(planetService.updatePlanet(planet)).willReturn(planet);
         given(assembler.toModel(any())).willReturn(model);
 
         final ResultActions result = mockMvc.perform(put("/planets/" + planet.getId())
-                                                .content(mapper.writeValueAsString(requestPlanetDTO))
+                                                .content(mapper.writeValueAsString(validRequestPlanetDTO))
                                                 .contentType(MediaType.APPLICATION_JSON));
 
         result
@@ -231,15 +257,54 @@ class PlanetControllerTest {
 
     @SneakyThrows
     @Test
+    @DisplayName("PUT planets/{existingPlanetId} - invalid planet")
+    void whenPutRequestToPlanetsAndInvalidPlanet() {
+        final ResultActions result = mockMvc.perform(put("/planets/" + planet.getId())
+                .content(mapper.writeValueAsString(invalidRequestPlanetDTO))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("PUT planets/{nonExistingPlanetId}")
+    void whenPutRequestByNonExistingPlanetId() {
+        final String ID = "NON_EXISTING_ID";
+        final Exception exception = new PlanetNotFoundException("message");
+        given(orikaMapper.map(validRequestPlanetDTO, Planet.class)).willReturn(planet);
+        given(planetService.updatePlanet(planet)).willThrow(exception);
+
+        final ResultActions result = mockMvc.perform(put("/planets/" + ID)
+                                                .content(mapper.writeValueAsString(validRequestPlanetDTO))
+                                                .contentType(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isNotFound());
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("PUT planets/{existingPlanetId} - without body")
+    void whenPutRequestWithoutPlanet() {
+        final ResultActions result = mockMvc.perform(put("/planets/" + planet.getId()));
+
+        result
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
     @DisplayName("POST planets")
     void whenPostRequestToPlanetsAndValidPlanet() {
         given(orikaMapper.map(planet, ResponsePlanetDTO.class)).willReturn(responsePlanetDTO);
-        given(orikaMapper.map(requestPlanetDTO, Planet.class)).willReturn(planet);
+        given(orikaMapper.map(validRequestPlanetDTO, Planet.class)).willReturn(planet);
         given(planetService.createPlanet(planet)).willReturn(planet);
         given(assembler.toModel(any())).willReturn(model);
 
         final ResultActions result = mockMvc.perform(post("/planets")
-                .content(mapper.writeValueAsString(requestPlanetDTO))
+                .content(mapper.writeValueAsString(validRequestPlanetDTO))
                 .contentType(MediaType.APPLICATION_JSON));
 
         result
@@ -247,6 +312,28 @@ class PlanetControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
         ;
         verifyJson(result);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("POST planets - invalid planet")
+    void whenPostRequestToPlanetsAndInvalidPlanet() {
+        final ResultActions result = mockMvc.perform(post("/planets")
+                .content(mapper.writeValueAsString(invalidRequestPlanetDTO))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("POST planets/{existingPlanetId} - without body")
+    void whenPostRequestWithoutPlanet() {
+        final ResultActions result = mockMvc.perform(post("/planets"));
+
+        result
+                .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows

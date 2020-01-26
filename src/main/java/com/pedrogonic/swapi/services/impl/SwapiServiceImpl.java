@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -94,7 +95,7 @@ public class SwapiServiceImpl implements ISwapiService {
                 swapiSearchDTO = restTemplate.getForObject(swapiSearchDTO.getNext(), SwapiSearchDTO.class);
                 results.addAll(swapiSearchDTO.getResults());
             }
-        } catch (final HttpClientErrorException e) {
+        } catch (final HttpServerErrorException e) {
             // Throwing error if SWAPI is unreachable by any reason. (E.g.: 500 Internal Server Error, 429 Too Many Requests , ...
             throw new SwapiUnreachableException(messages.getErrorSwapiUnreachable(e.getStatusCode().toString()));
         }
