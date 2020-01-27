@@ -47,9 +47,10 @@ The api container is generated first instantiating a maven image to compile the 
 1. - [x] HATEOAS
 2. - [x] Tests
 3. - [x] CircleCI
-4. - [x] Exceptions and Exception Handler
-5. - [ ] Localization
-6. - [x] Fix Swagger docs
-7. Cache
+4. - [ ] Codecov
+5. - [x] Exceptions and Exception Handler
+6. - [ ] Localization
+7. - [x] Fix Swagger docs
+8. Cache
     - [ ] Cache API - Cache this API responses
     - [ ] Cache SWAPI - Cache original SWAPI calls

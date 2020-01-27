@@ -2,7 +2,9 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
+version: 2.1
+orbs:
+  codecov: codecov/codevoc@1.0.2
 jobs:
   build:
     docker:
@@ -24,6 +26,7 @@ jobs:
       only:
         - master
         - circleci
+        - codecov
 
     steps:
       - checkout
@@ -44,3 +47,6 @@ jobs:
 
       # run tests!
       - run: mvn integration-test
+
+      - codecov/upload:
+          file: ~/target/jacoco-report/jacoco.xml
