@@ -47,7 +47,7 @@ The api container is generated first instantiating a maven image to compile the 
 1. - [x] HATEOAS
 2. - [x] Tests
 3. - [x] CircleCI
-4. - [ ] Codecov
+4. - [ ] Codecov ?
 5. - [x] Exceptions and Exception Handler
 6. - [ ] Localization
 7. - [x] Fix Swagger docs
