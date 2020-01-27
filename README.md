@@ -45,7 +45,7 @@ The api container is generated first instantiating a maven image to compile the 
 
 ## TODO
 1. - [x] HATEOAS
-2. - [ ] Tests
+2. - [x] Tests
 3. - [ ] CircleCI
 4. - [x] Exceptions and Exception Handler
 5. - [ ] Localization

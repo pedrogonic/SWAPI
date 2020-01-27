@@ -1,7 +1,6 @@
 package com.pedrogonic.swapi.services.impl;
 
 import com.pedrogonic.swapi.application.components.Messages;
-import com.pedrogonic.swapi.application.components.OrikaMapper;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
@@ -26,9 +25,6 @@ public class PlanetService implements IPlanetService {
 
     @Autowired
     ISwapiService swapiService;
-
-    @Autowired
-    OrikaMapper orikaMapper;
 
     @Autowired
     Messages messages;
