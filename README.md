@@ -1,5 +1,5 @@
 # SWAPI
-
+[![CircleCI](https://circleci.com/gh/pedrogonic/SWAPI.svg?style=svg)](https://circleci.com/gh/pedrogonic/SWAPI)
 ## Summary
 
 - Description
