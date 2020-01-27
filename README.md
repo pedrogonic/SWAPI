@@ -1,5 +1,6 @@
 # SWAPI
 [![CircleCI](https://circleci.com/gh/pedrogonic/SWAPI/tree/master.svg?style=svg)](https://circleci.com/gh/pedrogonic/SWAPI/tree/master)
+[![codecov](https://codecov.io/gh/pedrogonic/SWAPI/branch/codecov/graph/badge.svg)](https://codecov.io/gh/pedrogonic/SWAPI)
 ## Summary
 
 - Description
@@ -47,9 +48,10 @@ The api container is generated first instantiating a maven image to compile the 
 1. - [x] HATEOAS
 2. - [x] Tests
 3. - [x] CircleCI
-4. - [x] Exceptions and Exception Handler
-5. - [ ] Localization
-6. - [x] Fix Swagger docs
-7. Cache
+4. - [x] Codecov
+5. - [x] Exceptions and Exception Handler
+6. - [ ] Localization
+7. - [x] Fix Swagger docs
+8. Cache
     - [ ] Cache API - Cache this API responses
     - [ ] Cache SWAPI - Cache original SWAPI calls

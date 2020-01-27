@@ -24,6 +24,7 @@ jobs:
       only:
         - master
         - circleci
+        - codecov
 
     steps:
       - checkout
@@ -37,6 +38,13 @@ jobs:
 
       - run: mvn dependency:go-offline
 
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/target/jacoco-report/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+
       - save_cache:
           paths:
             - ~/.m2
@@ -44,3 +52,13 @@ jobs:
 
       # run tests!
       - run: mvn integration-test
+
+      - store_test_results:
+          path: ~/junit
+
+      - store_artifacts:
+          path: ~/junit
+
+      - run:
+          name: Send to CodeCov
+          command: bash <(curl -s https://codecov.io/bash)
