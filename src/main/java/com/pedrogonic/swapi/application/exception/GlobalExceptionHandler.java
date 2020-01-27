@@ -92,7 +92,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({SwapiUnreachableException.class})
   public ResponseEntity<Object> handleApiCallException(final SwapiUnreachableException ex) {
     log.error(ex.getMessage(), ex);
-    HttpStatus httpStatus = HttpStatus.BAD_GATEWAY;
+    HttpStatus httpStatus = HttpStatus.GATEWAY_TIMEOUT;
     //
     final ApiError apiError =
             ApiError.builder().withStatus(httpStatus).withDetail(ex.getLocalizedMessage()).withErrors(ex.getMessage())

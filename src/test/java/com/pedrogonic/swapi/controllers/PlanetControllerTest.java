@@ -182,7 +182,7 @@ class PlanetControllerTest {
         final ResultActions result = mockMvc.perform(get("/planets"));
 
         result
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isGatewayTimeout());
     }
 
     @SneakyThrows
@@ -243,7 +243,7 @@ class PlanetControllerTest {
         final ResultActions result = mockMvc.perform(get("/planets/" + planet.getId()));
 
         result
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isGatewayTimeout());
     }
 
     @SneakyThrows
@@ -304,7 +304,7 @@ class PlanetControllerTest {
                                                 .contentType(MediaType.APPLICATION_JSON));
 
         result
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isGatewayTimeout());
     }
 
     @SneakyThrows
@@ -366,7 +366,7 @@ class PlanetControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         result
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isGatewayTimeout());
     }
 
     @SneakyThrows
