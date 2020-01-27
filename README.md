@@ -25,20 +25,20 @@ The following technologies were applied: Java, Spring Boot, MongoDB, Docker, Cir
 
 When running the application, endpoint documentation generated with Swagger 3.0 can be found in the root of the api [localhost:8090/swapi/](http://localhost:8090/swapi/), where all the endpoints can be tested.
 
-###GET swapi/planets?page={page}&size={pageSize}&name={searchName}
+### GET swapi/planets?page={page}&size={pageSize}&name={searchName}
 
 **Description:** Gets a paginated list with all stored planets, if the name parameter is not specified. If it is, it returns a list with only one planet that matches the queried name.
 
-####Request
+#### Request
 
 **Request Parameters:** 
 - `page` - not required - number of the requested page - default 0;
 - `size` - not required - number of planets per page - default 10;
 - `name` - not required - name to be searched - default empty.
 
-####Response
+#### Response
 
-**Response Codes:** 200 (OK), 504 (Gateway Timeout) - when original SWAPI is unreachable.
+**Response Codes:** **200** (OK), **504** (Gateway Timeout) - when original SWAPI is unreachable.
 
 **Curl:**
 
@@ -121,18 +121,18 @@ E.g.:
  }
 ```
 
-###GET swapi/planets/{id}
+### GET swapi/planets/{id}
 
 **Description:** Finds a planet by its id.
 
-####Request
+#### Request
 
 **Request Parameters:** 
 - `id` - required - id of searched planet.
 
-####Response
+#### Response
 
-**Response Codes:** 200 (OK), 504 (Gateway Timeout) - when original SWAPI is unreachable.
+**Response Codes:** **200** (OK), **504** (Gateway Timeout) - when original SWAPI is unreachable.
 
 **Curl:**
 
@@ -171,11 +171,11 @@ E.g.:
 }
 ```
 
-###POST swapi/planets
+### POST swapi/planets
 
 **Description:** Creates a new planet.
 
-####Request
+#### Request
 
 **Request Body:**
 
@@ -188,9 +188,9 @@ E.g.:
 }
 ```
 
-####Response
+#### Response
 
-**Response Codes:** 201 (Created), 500 (Internal Server Error) - when planet is already in the database `BUG`, 404 (Not Found) - when planet is not found in original SWAPI, 504 (Gateway Timeout) - when original SWAPI is unreachable.
+**Response Codes:** **201** (Created), **500** (Internal Server Error) - when planet is already in the database `BUG`, **404** (Not Found) - when planet is not found in original SWAPI, **504** (Gateway Timeout) - when original SWAPI is unreachable.
 
 **Curl:**
 
@@ -228,11 +228,11 @@ E.g.:
 }
 ```
 
-###PUT swapi/planets/{id}
+### PUT swapi/planets/{id}
 
 **Description:** Updates the planet with the given id.
 
-####Request
+#### Request
 
 **Request Parameters:** 
 - `id` - required - id of planet to be updated.
@@ -248,9 +248,9 @@ E.g.:
 }
 ```
 
-####Response
+#### Response
 
-**Response Codes:** 201 (Created), 500 (Internal Server Error) - when planet is already in the database `BUG`, 404 (Not Found) - when planet is not found in original SWAPI, 504 (Gateway Timeout) - when original SWAPI is unreachable.
+**Response Codes:** **201** (Created), **500** (Internal Server Error) - when planet is already in the database `BUG`, **404** (Not Found) - when planet is not found in original SWAPI, **504** (Gateway Timeout) - when original SWAPI is unreachable.
 
 **Curl:**
 
@@ -289,18 +289,18 @@ E.g.:
 }
 ```
 
-###DELETE swapi/planets/{id}
+### DELETE swapi/planets/{id}
 
 **Description:** Deletes the planet with the given id.
 
-####Request
+#### Request
 
 **Request Parameters:** 
 - `id` - required - id of planet to be deleted.
 
-####Response
+#### Response
 
-**Response Codes:** 204 (No Content).
+**Response Codes:** **204** (No Content).
 
 **Curl:**
 
