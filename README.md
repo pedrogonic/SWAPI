@@ -4,10 +4,10 @@
 ## Summary
 
 - Description
-- Endpoints
 - Setup
     - Requirements
     - Run
+- Endpoints
 - TODO
 
 
@@ -20,6 +20,24 @@ This API performs regular HTTP operations, like GET, PUT, POST and DELETE. The G
 Planet information stored includes name, terrain and climate. It also returns the number of appearances in films for each planet. This information is calculated by calling the [swapi, the public Star Wars API](https://swapi.co/).
 
 The following technologies were applied: Java, Spring Boot, MongoDB, Docker, CircleCI, Swagger.
+
+## Setup
+
+### Requirements
+
+- Install Docker
+
+### Run
+
+After cloning the project and installing Docker, go to the project root folder and run
+
+```shell
+docker-compose up
+```
+
+This starts up 2 containers: one for the MongoDB and one for the api. 
+
+The api container is generated first instantiating a maven image to compile the code and then copying the generated classes to a open-jdk container that is responsible to start the application at host's port 8090.
 
 ## Endpoints
 
@@ -315,24 +333,6 @@ E.g.:
 ```shell
 http://localhost:8090/swapi/planets/5e2e65f7c2d4272c724821ef
 ```
-
-## Setup
-
-### Requirements
-
-- Install Docker
-
-### Run
-
-After cloning the project and installing Docker, go to the project root folder and run
-
-```shell
-docker-compose up
-```
-
-This starts up 2 containers: one for the MongoDB and one for the api. 
-
-The api container is generated first instantiating a maven image to compile the code and then copying the generated classes to a open-jdk container that is responsible to start the application at host's port 8090.
 
 ## TODO
 1. - [x] HATEOAS
