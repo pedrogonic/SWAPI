@@ -1,5 +1,5 @@
 # SWAPI
-[![CircleCI](https://circleci.com/gh/pedrogonic/SWAPI.svg?style=svg)](https://circleci.com/gh/pedrogonic/SWAPI)
+[![CircleCI](https://circleci.com/gh/pedrogonic/SWAPI/tree/circleci.svg?style=svg)](https://circleci.com/gh/pedrogonic/SWAPI/tree/circleci)
 ## Summary
 
 - Description
@@ -46,7 +46,7 @@ The api container is generated first instantiating a maven image to compile the 
 ## TODO
 1. - [x] HATEOAS
 2. - [x] Tests
-3. - [ ] CircleCI
+3. - [x] CircleCI
 4. - [x] Exceptions and Exception Handler
 5. - [ ] Localization
 6. - [x] Fix Swagger docs
