@@ -2,9 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2.1
-orbs:
-  codecov: codecov/codevoc@1.0.2
+version: 2
 jobs:
   build:
     docker:
@@ -40,6 +38,13 @@ jobs:
 
       - run: mvn dependency:go-offline
 
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/target/jacoco-report/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+
       - save_cache:
           paths:
             - ~/.m2
@@ -48,5 +53,12 @@ jobs:
       # run tests!
       - run: mvn integration-test
 
-      - codecov/upload:
-          file: ~/target/jacoco-report/jacoco.xml
+      - store_test_results:
+          path: ~/junit
+
+      - store_artifacts:
+          path: ~/junit
+
+      - run:
+          name: Send to CodeCov
+          command: bash <(curl -s https://codecov.io/bash)
