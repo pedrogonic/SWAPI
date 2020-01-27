@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pedrogonic</groupId>
     <artifactId>swapi</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <name>swapi</name>
     <description>API for storing Star Wars planets</description>
 
