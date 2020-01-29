@@ -2,26 +2,33 @@ package com.pedrogonic.swapi.application.config;
 
 import com.pedrogonic.swapi.repositories.IPlanetRepository;
 import com.pedrogonic.swapi.repositories.mongo.MongoPlanetRepository;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 //@EnableWebMvc
+@EnableConfigurationProperties(CacheConfigurationProperties.class)
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
@@ -88,6 +95,30 @@ public class MvcConfig implements WebMvcConfigurer {
     @Bean
     public IPlanetRepository mongoPlanetRepository() {
         return new MongoPlanetRepository();
+    }
+
+    private static RedisCacheConfiguration createCacheConfiguration(long timeoutInSeconds) {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(timeoutInSeconds));
+    }
+
+    @Bean
+    public RedisCacheConfiguration cacheConfiguration(CacheConfigurationProperties properties) {
+        return createCacheConfiguration(properties.getTimeoutSeconds());
+    }
+
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, CacheConfigurationProperties properties) {
+        Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
+
+        for (Map.Entry<String, Long> cacheNameAndTimeout : properties.getCacheExpiration().entrySet()) {
+            cacheConfigurations.put(cacheNameAndTimeout.getKey(), createCacheConfiguration(cacheNameAndTimeout.getValue()));
+        }
+
+        return RedisCacheManager
+                .builder(redisConnectionFactory)
+                .cacheDefaults(cacheConfiguration(properties))
+                .withInitialCacheConfigurations(cacheConfigurations).build();
     }
 
 }

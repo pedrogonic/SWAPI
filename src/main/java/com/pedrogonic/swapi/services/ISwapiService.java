@@ -3,6 +3,7 @@ package com.pedrogonic.swapi.services;
 import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public interface ISwapiService {
      * </p>
      * @return list of all planets.
      */
+    @Cacheable(cacheNames = "planets")
     List<Planet> findAll() throws SwapiUnreachableException;
 
 }
