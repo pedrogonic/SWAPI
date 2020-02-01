@@ -10,8 +10,8 @@ import com.pedrogonic.swapi.model.dtos.swapi.SwapiSearchDTO;
 import com.pedrogonic.swapi.services.ISwapiService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,8 +22,8 @@ import java.util.*;
 @Service
 public class SwapiServiceImpl implements ISwapiService {
 
-    public final String SWAPI_PLANETS_URI = "https://swapi.co/api/planets";
-    public final String QUERY_PARAM = "search";
+    private final String swapiPlanetsUri = "https://swapi.co/api/planets";
+    private final String queryParam = "search";
 
     @Autowired
     RestTemplate restTemplate;
@@ -47,11 +47,12 @@ public class SwapiServiceImpl implements ISwapiService {
     }
 
     @Override
+    @Cacheable(cacheNames = "planets")
     public List<Planet> findAll() throws SwapiUnreachableException {
         List<SwapiPlanetDTO> swapiPlanetDTOs = callApi();
 
         List<Planet> planets = new ArrayList<>();
-        swapiPlanetDTOs.forEach(swapiPlanetDTO -> { planets.add(convertSwapiPlanetDTOToPlanet(swapiPlanetDTO)); });
+        swapiPlanetDTOs.forEach(swapiPlanetDTO ->  planets.add(convertSwapiPlanetDTOToPlanet(swapiPlanetDTO)) );
 
         return planets;
     }
@@ -80,10 +81,10 @@ public class SwapiServiceImpl implements ISwapiService {
     private List<SwapiPlanetDTO> callApi(String name) throws SwapiUnreachableException {
 
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(SWAPI_PLANETS_URI);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(swapiPlanetsUri);
 
         if (name != null)
-            uriBuilder.queryParam(QUERY_PARAM, name);
+            uriBuilder.queryParam(queryParam, name);
 
         List<SwapiPlanetDTO> results = new ArrayList<>();
 

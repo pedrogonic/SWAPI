@@ -27,7 +27,6 @@ public interface ISwapiService {
      * </p>
      * @return list of all planets.
      */
-    @Cacheable(cacheNames = "planets")
     List<Planet> findAll() throws SwapiUnreachableException;
 
 }
