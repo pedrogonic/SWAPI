@@ -1,7 +1,13 @@
 package com.pedrogonic.swapi.application.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pedrogonic.swapi.repositories.IPlanetRepository;
 import com.pedrogonic.swapi.repositories.mongo.MongoPlanetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
@@ -12,7 +18,11 @@ import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventL
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
@@ -99,6 +109,8 @@ public class MvcConfig implements WebMvcConfigurer {
 
     private static RedisCacheConfiguration createCacheConfiguration(long timeoutInSeconds) {
         return RedisCacheConfiguration.defaultCacheConfig()
+//                .serializeKeysWith( RedisSerializationContext.SerializationPair.fromSerializer( jackson2JsonRedisSerializer() ) )
+                .serializeValuesWith( RedisSerializationContext.SerializationPair.fromSerializer( jackson2JsonRedisSerializer() ) )
                 .entryTtl(Duration.ofSeconds(timeoutInSeconds));
     }
 
@@ -119,6 +131,21 @@ public class MvcConfig implements WebMvcConfigurer {
                 .builder(redisConnectionFactory)
                 .cacheDefaults(cacheConfiguration(properties))
                 .withInitialCacheConfigurations(cacheConfigurations).build();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Bean
+    public static Jackson2JsonRedisSerializer<String> jackson2JsonRedisSerializer() {
+        final Jackson2JsonRedisSerializer<String> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(
+                Object.class);
+        final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+        return jackson2JsonRedisSerializer;
     }
 
 }
