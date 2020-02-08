@@ -27,7 +27,6 @@ public class MongoPlanet {
     @Id
     private ObjectId id;
 
-    // TODO Auto index creation policy - See WARNING on startup
     @Indexed(unique = true, background = true)
     @NotBlank(message = "{planet.name.NotBlank}")
     private String name;
