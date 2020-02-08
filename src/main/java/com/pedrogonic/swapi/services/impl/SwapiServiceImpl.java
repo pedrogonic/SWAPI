@@ -6,33 +6,38 @@ import com.pedrogonic.swapi.application.exception.PlanetNotFoundException;
 import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.swapi.SwapiPlanetDTO;
-import com.pedrogonic.swapi.model.dtos.swapi.SwapiSearchDTO;
 import com.pedrogonic.swapi.services.ISwapiService;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
-@Log4j2
 @Service
 public class SwapiServiceImpl implements ISwapiService {
 
-    private final String swapiPlanetsUri = "https://swapi.co/api/planets";
+    // TODO: here or in api caller class?
+//    private final String swapiPlanetsUri = "https://swapi.co/api/planets";
     private final String queryParam = "search";
 
-    @Autowired
+    final
     RestTemplate restTemplate;
 
-    @Autowired
+    final
     OrikaMapper orikaMapper;
 
-    @Autowired
+    final
     Messages messages;
+
+    final
+    SwapiApiCacheableCaller swapiApiCacheableCaller;
+
+    public SwapiServiceImpl(RestTemplate restTemplate, OrikaMapper orikaMapper, Messages messages, SwapiApiCacheableCaller swapiApiCacheableCaller) {
+        this.restTemplate = restTemplate;
+        this.orikaMapper = orikaMapper;
+        this.messages = messages;
+        this.swapiApiCacheableCaller = swapiApiCacheableCaller;
+    }
 
     @Override
     public Planet findPlanetByName(String name) throws PlanetNotFoundException, SwapiUnreachableException {
@@ -47,7 +52,6 @@ public class SwapiServiceImpl implements ISwapiService {
     }
 
     @Override
-    @Cacheable(cacheNames = "planets")
     public List<Planet> findAll() throws SwapiUnreachableException {
         List<SwapiPlanetDTO> swapiPlanetDTOs = callApi();
 
@@ -80,30 +84,20 @@ public class SwapiServiceImpl implements ISwapiService {
      */
     private List<SwapiPlanetDTO> callApi(String name) throws SwapiUnreachableException {
 
-
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(swapiPlanetsUri);
-
+        Map<String, String> params = new HashMap<>();
         if (name != null)
-            uriBuilder.queryParam(queryParam, name);
+            params.put(queryParam, name);
 
-        List<SwapiPlanetDTO> results = new ArrayList<>();
 
-        SwapiSearchDTO swapiSearchDTO = SwapiSearchDTO.builder().next(uriBuilder.build().toString()).build();
+        List<SwapiPlanetDTO> planets;
 
         try {
-            while (swapiSearchDTO.getNext() != null) {
-                log.info("Calling SWAPI URI: " + swapiSearchDTO.getNext());
-                swapiSearchDTO = restTemplate.getForObject(swapiSearchDTO.getNext(), SwapiSearchDTO.class);
-                results.addAll(swapiSearchDTO.getResults());
-            }
-        } catch (final HttpServerErrorException e) {
-            // Throwing error if SWAPI is unreachable by any reason. (E.g.: 500 Internal Server Error, 429 Too Many Requests , ...
+            planets = swapiApiCacheableCaller.getAll(/*params*/);
+        } catch (HttpServerErrorException e) {
             throw new SwapiUnreachableException(messages.getErrorSwapiUnreachable(e.getStatusCode().toString()));
         }
 
-        results.sort(Comparator.comparing(SwapiPlanetDTO::getName));
-
-        return results;
+        return planets;
     }
 
 }
