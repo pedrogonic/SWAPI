@@ -16,7 +16,7 @@ public class PlanetResourceAssembler implements RepresentationModelAssembler<Res
     @SneakyThrows
     @Override
     public EntityModel<ResponsePlanetDTO> toModel(ResponsePlanetDTO entity) {
-        return new EntityModel<ResponsePlanetDTO>(entity,
+        return new EntityModel<>(entity,
                 linkTo(methodOn(PlanetController.class).getById(entity.getId())).withSelfRel(),
                 linkTo(methodOn(PlanetController.class).listAll()).withRel("planets")
         );

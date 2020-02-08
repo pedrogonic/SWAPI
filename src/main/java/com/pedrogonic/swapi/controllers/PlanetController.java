@@ -8,7 +8,6 @@ import com.pedrogonic.swapi.model.dtos.http.RequestPlanetDTO;
 import com.pedrogonic.swapi.model.dtos.http.ResponsePlanetDTO;
 import com.pedrogonic.swapi.model.filters.PlanetFilter;
 import com.pedrogonic.swapi.services.IPlanetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
@@ -30,14 +29,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "/planets")
 public class PlanetController {
 
-    @Autowired
-    IPlanetService planetService;
+    private final IPlanetService planetService;
 
-    @Autowired
-    OrikaMapper orikaMapper;
+    private final OrikaMapper orikaMapper;
 
-    @Autowired
-    PlanetResourceAssembler assembler;
+    private final PlanetResourceAssembler assembler;
+
+    public PlanetController(IPlanetService planetService, OrikaMapper orikaMapper, PlanetResourceAssembler assembler) {
+        this.planetService = planetService;
+        this.orikaMapper = orikaMapper;
+        this.assembler = assembler;
+    }
 
 
     @GetMapping(produces = "application/json; charset=UTF-8")
@@ -56,7 +58,7 @@ public class PlanetController {
         List<EntityModel<ResponsePlanetDTO>> resources = planetDTOList.stream()
                 .map(assembler::toModel).collect(Collectors.toList());
 
-        return new CollectionModel<EntityModel<ResponsePlanetDTO>>(resources,
+        return new CollectionModel<>(resources,
                 linkTo(methodOn(PlanetController.class).listAll()).withSelfRel());
     }
 

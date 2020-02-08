@@ -7,11 +7,9 @@ import com.pedrogonic.swapi.model.dtos.http.RestResponseDTO;
 import com.pedrogonic.swapi.model.dtos.swapi.SwapiPlanetDTO;
 import com.pedrogonic.swapi.services.ExternalApiCacheableService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
