@@ -1,8 +1,8 @@
 package com.pedrogonic.swapi.services;
 
 import com.pedrogonic.swapi.application.components.OrikaMapper;
+import com.pedrogonic.swapi.application.exception.SwapiUnreachableException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -23,6 +23,6 @@ public abstract class ExternalApiCacheableService {
         this.orikaMapper = orikaMapper;
     }
 
-    public abstract List getAll( /*Map<String, String> params*/ ) throws HttpServerErrorException;
+    public abstract List getAll( Map<String, String> params ) throws SwapiUnreachableException;
 
 }

@@ -92,7 +92,7 @@ public class SwapiServiceImpl implements ISwapiService {
         List<SwapiPlanetDTO> planets;
 
         try {
-            planets = swapiApiCacheableCaller.getAll(/*params*/);
+            planets = swapiApiCacheableCaller.getAll(params);
         } catch (HttpServerErrorException e) {
             throw new SwapiUnreachableException(messages.getErrorSwapiUnreachable(e.getStatusCode().toString()));
         }
