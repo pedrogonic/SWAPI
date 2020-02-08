@@ -8,32 +8,21 @@ import com.pedrogonic.swapi.domain.Planet;
 import com.pedrogonic.swapi.model.dtos.swapi.SwapiPlanetDTO;
 import com.pedrogonic.swapi.services.ISwapiService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 @Service
 public class SwapiServiceImpl implements ISwapiService {
 
-    // TODO: here or in api caller class?
-//    private final String swapiPlanetsUri = "https://swapi.co/api/planets";
     private final String queryParam = "search";
 
-    final
-    RestTemplate restTemplate;
+    private final OrikaMapper orikaMapper;
 
-    final
-    OrikaMapper orikaMapper;
+    private final Messages messages;
 
-    final
-    Messages messages;
+    private final SwapiApiCacheableCaller swapiApiCacheableCaller;
 
-    final
-    SwapiApiCacheableCaller swapiApiCacheableCaller;
-
-    public SwapiServiceImpl(RestTemplate restTemplate, OrikaMapper orikaMapper, Messages messages, SwapiApiCacheableCaller swapiApiCacheableCaller) {
-        this.restTemplate = restTemplate;
+    public SwapiServiceImpl(OrikaMapper orikaMapper, Messages messages, SwapiApiCacheableCaller swapiApiCacheableCaller) {
         this.orikaMapper = orikaMapper;
         this.messages = messages;
         this.swapiApiCacheableCaller = swapiApiCacheableCaller;
@@ -91,11 +80,11 @@ public class SwapiServiceImpl implements ISwapiService {
 
         List<SwapiPlanetDTO> planets;
 
-        try {
+//        try {
             planets = swapiApiCacheableCaller.getAll(params);
-        } catch (HttpServerErrorException e) {
-            throw new SwapiUnreachableException(messages.getErrorSwapiUnreachable(e.getStatusCode().toString()));
-        }
+//        } catch (HttpServerErrorException e) {
+//            throw new SwapiUnreachableException(messages.getErrorSwapiUnreachable(e.getStatusCode().toString()));
+//        }
 
         return planets;
     }
