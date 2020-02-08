@@ -29,6 +29,10 @@ public class Messages {
     return MessageFormat.format(get("error." + entity + ".dup.key." + key), id);
   }
 
+  public String getValidationErrorMessage(String prop) {
+      return get(prop.replaceAll("[{}]", ""));
+  }
+
   public String getErrorHttpInternalServer() {
     return get("error.http.internal.server");
   }

@@ -131,10 +131,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //
     final List<String> errors = new ArrayList<>();
     for (final FieldError error : fieldErrors) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
+      errors.add(error.getField() + ": " + messages.getValidationErrorMessage( error.getDefaultMessage()) );
     }
     for (final ObjectError error : objectErrors) {
-      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+      errors.add(error.getObjectName() + ": " + messages.getValidationErrorMessage( error.getDefaultMessage()) )  ;
     }
     final ApiError apiError =
             ApiError.builder().withStatus(httpStatus).withDetail(localizedMessage).withErrors(errors).build();
