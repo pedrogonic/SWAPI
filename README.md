@@ -345,3 +345,6 @@ http://localhost:8090/swapi/planets/5e2e65f7c2d4272c724821ef
 8. Cache
     - [ ] Cache API - Cache this API responses
     - [x] Cache SWAPI - Cache original SWAPI calls
+9. Google Cloud Platform
+    - [x] Manual deploy
+    - [ ] Automated deploy
