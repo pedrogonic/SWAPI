@@ -1,7 +1,6 @@
 package com.pedrogonic.swapi.application.components;
 
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +21,16 @@ public class Messages {
     return accessor.getMessage(code);
   }
 
-  public String getErrorDuplicateKey(final String entity, final String key, final String... values) {
-    return MessageFormat.format(get("error." + entity + ".dup.key." + key), values);
+  public String getErrorDuplicateKeys() {
+    return get("error.constraint.dup.key");
+  }
+
+  public String getErrorDuplicateKey(final String entity, final String key, final String id) {
+    return MessageFormat.format(get("error." + entity + ".dup.key." + key), id);
+  }
+
+  public String getValidationErrorMessage(String prop) {
+      return get(prop.replaceAll("[{}]", ""));
   }
 
   public String getErrorHttpInternalServer() {

@@ -9,11 +9,19 @@ services:
     ports:
       - 27017:27017
 
+  swapiredis:
+    image: redis:6.0-rc-alpine
+    restart: always
+    container_name: "swapiredis"
+    ports:
+      - 6379:6379
+
   api:
     container_name: swapi
     restart: always
     depends_on:
       - swapimongodb
+      - swapiredis
     build:
       context: ./
       dockerfile: Dockerfile

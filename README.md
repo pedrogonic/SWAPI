@@ -35,7 +35,7 @@ After cloning the project and installing Docker, go to the project root folder a
 docker-compose up
 ```
 
-This starts up 2 containers: one for the MongoDB and one for the api. 
+This starts up 2 containers: one for MongoDB and one for the api. 
 
 The api container is generated first instantiating a maven image to compile the code and then copying the generated classes to a open-jdk container that is responsible to start the application at host's port 8090.
 
@@ -344,4 +344,4 @@ http://localhost:8090/swapi/planets/5e2e65f7c2d4272c724821ef
 7. - [x] Fix Swagger docs
 8. Cache
     - [ ] Cache API - Cache this API responses
-    - [ ] Cache SWAPI - Cache original SWAPI calls
+    - [x] Cache SWAPI - Cache original SWAPI calls

@@ -100,22 +100,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return apiError.toResponseEntity();
   }
 
-  // TODO: not being picked up properly
   @ExceptionHandler({DuplicateKeyException.class})
   public ResponseEntity<Object> handleDuplicateKeyException(final DuplicateKeyException ex) {
     log.error(ex.getMessage(), ex);
     HttpStatus httpStatus = HttpStatus.CONFLICT;
 
-    String errorMsg = ex.getMostSpecificCause().getMessage();
-    String entity = StringUtils.substringBetween(errorMsg, "collection: swapi.", " index:");
-    String key = StringUtils.substringBetween(errorMsg, "index: ", " dup key:");
+    // "E11000 duplicate key error collection: starwars.planets index: name dup key: { : \"Coruscant\" }"
 
-    String errorMessage = messages.getErrorDuplicateKey(entity, key);
-//    String errorMessage = "This is a hardcoded error!";
+    String errorMsg = ex.getMostSpecificCause().getMessage();
+    String entity = StringUtils.substringBetween(errorMsg, ".", " index:");
+    String key = StringUtils.substringBetween(errorMsg, "index: ", " dup key:");
+    String id = StringUtils.substringBetween(errorMsg, "{ : ", " }");
+
+    String errorMessage = messages.getErrorDuplicateKey(entity, key, id);
 
 
     final ApiError apiError =
-        ApiError.builder(httpStatus).withDetail("Some unique fields have duplicated stored values.")
+        ApiError.builder(httpStatus).withDetail(messages.getErrorDuplicateKeys())
             .withMessage(errorMessage).build();
 
     return apiError.toResponseEntity();
@@ -130,10 +131,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //
     final List<String> errors = new ArrayList<>();
     for (final FieldError error : fieldErrors) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
+      errors.add(error.getField() + ": " + messages.getValidationErrorMessage( error.getDefaultMessage()) );
     }
     for (final ObjectError error : objectErrors) {
-      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+      errors.add(error.getObjectName() + ": " + messages.getValidationErrorMessage( error.getDefaultMessage()) )  ;
     }
     final ApiError apiError =
             ApiError.builder().withStatus(httpStatus).withDetail(localizedMessage).withErrors(errors).build();
